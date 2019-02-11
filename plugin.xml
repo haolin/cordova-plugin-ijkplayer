@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * Apache 2.0 License
+ *
+ * Copyright (c) Hao Lin 2019
+ *
+ * This file contains Original Code and/or Modifications of Original Code
+ * as defined in and that are subject to the Apache License
+ * Version 2.0 (the 'License'). You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at
+ * http://opensource.org/licenses/Apache-2.0/ and read it before using this
+ * file.
+ *
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ * Please see the License for the specific language governing rights and
+ * limitations under the License.
+-->
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="cordova-plugin-ijkplayer"
+        version="0.1.0">
+
+    <name>ijkPlayer</name>
+
+    <description>ijkplayer for cordova</description>
+
+    <repo>https://github.com/haolin/cordova-plugin-ijkplayer.git</repo>
+
+    <keywords>ijkplayer</keywords>
+
+    <license>Apache 2.0</license>
+
+    <author>Hao Lin</author>
+
+    <!-- cordova -->
+    <engines>
+        <engine name="cordova"         version=">=8.0.0"  />
+        <engine name="cordova-plugman" version=">=4.3.0"  />
+        <engine name="cordova-android" version=">=6.4.0"  />
+        <engine name="android-sdk"     version=">=21" />
+        <engine name="apple-ios"       version=">=8.0.0" />
+    </engines>
+
+    <!-- dependencies -->
+    <dependency id="cordova-plugin-device" />
+
+    <!-- js -->
+    <js-module src="www/ijkplayer.js" name="IjkPlayer">
+        <clobbers target="cordova.plugins.ijkplayer" />
+    </js-module>
+
+    <!-- ios -->
+    <!--  
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="LocalNotification">
+                <param name="ios-package" value="APPLocalNotification" onload="true" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <framework src="UserNotifications.framework" />
+        <framework src="CoreLocation.framework" />
+
+        <header-file src="src/ios/APPLocalNotification.h" />
+        <source-file src="src/ios/APPLocalNotification.m" />
+
+        <header-file src="src/ios/APPNotificationCategory.h" />
+        <source-file src="src/ios/APPNotificationCategory.m" />
+
+        <header-file src="src/ios/APPNotificationContent.h" />
+        <source-file src="src/ios/APPNotificationContent.m" />
+
+        <header-file src="src/ios/APPNotificationOptions.h" />
+        <source-file src="src/ios/APPNotificationOptions.m" />
+
+        <header-file src="src/ios/UNUserNotificationCenter+APPLocalNotification.h" />
+        <source-file src="src/ios/UNUserNotificationCenter+APPLocalNotification.m" />
+
+        <header-file src="src/ios/UNNotificationRequest+APPLocalNotification.h" />
+        <source-file src="src/ios/UNNotificationRequest+APPLocalNotification.m" />
+    </platform>
+    -->
+
+    <!-- android -->
+    <platform name="android">
+        <preference name="ANDROID_SUPPORT_V4_VERSION" default="21.+" />
+        <framework src="com.android.support:support-v4:$ANDROID_SUPPORT_V4_VERSION" />
+        <framework src="src/android/build/ijkplayer.gradle" custom="true" type="gradleReference"/>
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="IjkPlayer">
+                <param name="android-package" value="de.appplant.cordova.plugin.ijkplayer.IjkPlayer"/>
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <provider
+                android:name="de.appplant.cordova.plugin.notification.util.AssetProvider"
+                android:authorities="${applicationId}.provider"
+                android:exported="false"
+                android:grantUriPermissions="true" >
+                <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/ijkplayer_provider_paths"/>
+            </provider>
+
+            <receiver
+                android:name="de.appplant.cordova.plugin.localnotification.TriggerReceiver"
+                android:exported="false" />
+
+            <receiver
+                android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver"
+                android:exported="false" />
+
+            <service
+                android:name="de.appplant.cordova.plugin.localnotification.ClickReceiver"
+                android:exported="false" />
+
+            <receiver
+                android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver"
+                android:directBootAware="true"
+                android:exported="false" >
+                <intent-filter>
+                    <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                    <action android:name="android.intent.action.BOOT_COMPLETED" />
+                </intent-filter>
+            </receiver>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+        </config-file>
+
+        <source-file
+            src="src/android/xml/localnotification_provider_paths.xml"
+            target-dir="res/xml" />
+
+        <source-file
+            src="src/android/ijkplayer/media/AndroidMediaController.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+
+        <source-file
+            src="src/android/ijkplayer/media/FileMediaDataSource.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+
+        <source-file
+            src="src/android/ijkplayer/media/IjkVideoView.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+        <source-file
+            src="src/android/ijkplayer/media/FileMediaDataSource.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+        <source-file
+            src="src/android/ijkplayer/media/IMediaController.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+        <source-file
+            src="src/android/ijkplayer/media/InfoHudViewHolder.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+        <source-file
+            src="src/android/ijkplayer/media/IRenderView.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+        <source-file
+            src="src/android/ijkplayer/media/MeasureHelper.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+        <source-file
+            src="src/android/ijkplayer/media/MediaPlayerCompat.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+        <source-file
+            src="src/android/ijkplayer/media/PlayerManager.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+        <source-file
+            src="src/android/ijkplayer/media/SurfaceRenderView.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+        <source-file
+            src="src/android/ijkplayer/media/TableLayoutBinder.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+        <source-file
+            src="src/android/ijkplayer/media/TextureRenderView.java"
+            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+
+    </platform>
+
+</plugin>
