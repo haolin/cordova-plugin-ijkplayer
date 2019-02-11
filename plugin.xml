@@ -140,7 +140,7 @@
         </config-file>
 
         <source-file
-            src="src/android/xml/localnotification_provider_paths.xml"
+            src="src/android/xml/ijkplayer_provider_paths.xml"
             target-dir="res/xml" />
 
         <source-file
