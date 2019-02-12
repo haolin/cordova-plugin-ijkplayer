@@ -27,11 +27,7 @@
         version="0.1.0">
 
     <name>ijkPlayer</name>
-
     <description>ijkplayer for cordova</description>
-
-    <repo>https://github.com/haolin/cordova-plugin-ijkplayer.git</repo>
-
     <keywords>ijkplayer</keywords>
 
     <license>Apache 2.0</license>
@@ -97,6 +93,7 @@
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="IjkPlayer">
                 <param name="android-package" value="org.apache.cordova.ijkplayer.IjkPlayer"/>
+                <preference name="android-minSdkVersion" value="21" />
             </feature>
         </config-file>
 
