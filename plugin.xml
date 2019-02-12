@@ -234,6 +234,7 @@
 
 
         <resource-file src="src/android/values/ijkplayer_strings.xml" target="res/values" /> 
+        <resource-file src="src/android/values/ijkplayer_strings_pref.xml" target="res/values" />
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <activity android:name="org.apache.cordova.ijkplayer" android:label="@string/app_name">
                 <intent-filter>
