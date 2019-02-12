@@ -241,37 +241,37 @@
         </config-file>
 
 
-        <resource-file src="src/android/values/ijkplayer_strings.xml" target="res/values" /> 
-        <resource-file src="src/android/values/ijkplayer_strings_pref.xml" target="res/values" />
+        <resource-file src="src/android/values/ijkplayer_strings.xml" target="res/values/" /> 
+        <resource-file src="src/android/values/ijkplayer_strings_pref.xml" target="res/values/" />
 
-        <resource-file src="src/android/layout/activity_home.xml" target="res/layout" />
-        <resource-file src="src/android/layout/activity_main_view.xml" target="res/layout" />
-        <resource-file src="src/android/layout/activity_player.xml" target="res/layout" />
-        <resource-file src="src/android/layout/strings_pref.xml" target="res/layout" />
-        <resource-file src="src/android/layout/strings.xml" target="res/layout" />
-        <resource-file src="src/android/layout/table_media_info_row1.xml" target="res/layout" />
-        <resource-file src="src/android/layout/table_media_info_row2.xml" target="res/layout" />
-        <resource-file src="src/android/layout/table_media_info_section.xml" target="res/layout" />
-        <resource-file src="src/android/layout/table_media_info.xml" target="res/layout" />
+        <resource-file src="src/android/layout/activity_home.xml" target="res/layout/" />
+        <resource-file src="src/android/layout/activity_main_view.xml" target="res/layout/" />
+        <resource-file src="src/android/layout/activity_player.xml" target="res/layout/" />
+        <resource-file src="src/android/layout/strings_pref.xml" target="res/layout/" />
+        <resource-file src="src/android/layout/strings.xml" target="res/layout/" />
+        <resource-file src="src/android/layout/table_media_info_row1.xml" target="res/layout/" />
+        <resource-file src="src/android/layout/table_media_info_row2.xml" target="res/layout/" />
+        <resource-file src="src/android/layout/table_media_info_section.xml" target="res/layout/" />
+        <resource-file src="src/android/layout/table_media_info.xml" target="res/layout/" />
 
-        <resource-file src="src/android/libs/ijkplayer-exo-release.aar" target="libs" />
-        <resource-file src="src/android/libs/ijkplayer-java-release.aar" target="libs" />
-        <resource-file src="src/android/libs/otto-1.3.8.jar" target="libs" />
-        <resource-file src="src/android/libs/arm64-v8a/libijkffmpeg.so" target="libs/arm64-v8a" />
-        <resource-file src="src/android/libs/arm64-v8a/libijkplayer.so" target="libs/arm64-v8a" />
-        <resource-file src="src/android/libs/arm64-v8a/libijksdl.so" target="libs/arm64-v8a" />
-        <resource-file src="src/android/libs/armeabi/libijkffmpeg.so" target="libs/armeabi" />
-        <resource-file src="src/android/libs/armeabi/libijkplayer.so" target="libs/armeabi" />
-        <resource-file src="src/android/libs/armeabi/libijksdl.so" target="libs/armeabi" />
-        <resource-file src="src/android/libs/armeabi-v7a/libijkffmpeg.so" target="libs/armeabi-v7a" />
-        <resource-file src="src/android/libs/armeabi-v7a/libijkplayer.so" target="libs/armeabi-v7a" />
-        <resource-file src="src/android/libs/armeabi-v7a/libijksdl.so" target="libs/armeabi-v7a" />
-        <resource-file src="src/android/libs/x86/libijkffmpeg.so" target="libs/x86" />
-        <resource-file src="src/android/libs/x86/libijkplayer.so" target="libs/x86" />
-        <resource-file src="src/android/libs/x86/libijksdl.so" target="libs/x86" />
-        <resource-file src="src/android/libs/x86_64/libijkffmpeg.so" target="libs/x86_64" />
-        <resource-file src="src/android/libs/x86_64/libijkplayer.so" target="libs/x86_64" />
-        <resource-file src="src/android/libs/x86_64/libijksdl.so" target="libs/x86_64" />
+        <resource-file src="src/android/libs/ijkplayer-exo-release.aar" target="libs/" />
+        <resource-file src="src/android/libs/ijkplayer-java-release.aar" target="libs/" />
+        <resource-file src="src/android/libs/otto-1.3.8.jar" target="libs/" />
+        <resource-file src="src/android/libs/arm64-v8a/libijkffmpeg.so" target="libs/arm64-v8a/" />
+        <resource-file src="src/android/libs/arm64-v8a/libijkplayer.so" target="libs/arm64-v8a/" />
+        <resource-file src="src/android/libs/arm64-v8a/libijksdl.so" target="libs/arm64-v8a/" />
+        <resource-file src="src/android/libs/armeabi/libijkffmpeg.so" target="libs/armeabi/" />
+        <resource-file src="src/android/libs/armeabi/libijkplayer.so" target="libs/armeabi/" />
+        <resource-file src="src/android/libs/armeabi/libijksdl.so" target="libs/armeabi/" />
+        <resource-file src="src/android/libs/armeabi-v7a/libijkffmpeg.so" target="libs/armeabi-v7a/" />
+        <resource-file src="src/android/libs/armeabi-v7a/libijkplayer.so" target="libs/armeabi-v7a/" />
+        <resource-file src="src/android/libs/armeabi-v7a/libijksdl.so" target="libs/armeabi-v7a/" />
+        <resource-file src="src/android/libs/x86/libijkffmpeg.so" target="libs/x86/" />
+        <resource-file src="src/android/libs/x86/libijkplayer.so" target="libs/x86/" />
+        <resource-file src="src/android/libs/x86/libijksdl.so" target="libs/x86/" />
+        <resource-file src="src/android/libs/x86_64/libijkffmpeg.so" target="libs/x86_64/" />
+        <resource-file src="src/android/libs/x86_64/libijkplayer.so" target="libs/x86_64/" />
+        <resource-file src="src/android/libs/x86_64/libijksdl.so" target="libs/x86_64/" />
 
 
         <source-file
