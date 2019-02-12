@@ -242,6 +242,25 @@
             </activity>
         </config-file>
 
+        <lib-file src="src/android/libs/ijkplayer-exo-release.aar" arch="device" />
+        <lib-file src="src/android/libs/ijkplayer-java-release.aar" arch="device" />
+        <lib-file src="src/android/libs/otto-1.3.8.jar" arch="device" />
+        <lib-file src="src/android/libs/arm64-v8a/libijkffmpeg.so" arch="device" />
+        <lib-file src="src/android/libs/arm64-v8a/libijkplayer.so" arch="device" />
+        <lib-file src="src/android/libs/arm64-v8a/libijksdl.so" arch="device" />
+        <lib-file src="src/android/libs/armeabi/libijkffmpeg.so" arch="device" />
+        <lib-file src="src/android/libs/armeabi/libijkplayer.so" arch="device" />
+        <lib-file src="src/android/libs/armeabi/libijksdl.so" arch="device" />
+        <lib-file src="src/android/libs/armeabi-v7a/libijkffmpeg.so" arch="device" />
+        <lib-file src="src/android/libs/armeabi-v7a/libijkplayer.so" arch="device" />
+        <lib-file src="src/android/libs/armeabi-v7a/libijksdl.so" arch="device" />
+        <lib-file src="src/android/libs/x86/libijkffmpeg.so" arch="device" />
+        <lib-file src="src/android/libs/x86/libijkplayer.so" arch="device" />
+        <lib-file src="src/android/libs/x86/libijksdl.so" arch="device" />
+        <lib-file src="src/android/libs/x86_64/libijkffmpeg.so" arch="device" />
+        <lib-file src="src/android/libs/x86_64/libijkplayer.so" arch="device" />
+        <lib-file src="src/android/libs/x86_64/libijksdl.so" arch="device" />
+
 
         <source-file
             src="src/android/xml/ijkplayer_provider_paths.xml"
