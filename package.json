@@ -1,9 +1,9 @@
 {
   "name": "cordova-plugin-ijkplayer",
   "version": "0.1.0",
-  "description": "Schedules and queries for local notifications",
+  "description": "ijkplayer for cordova",
   "cordova": {
-    "id": "ijkplayer for cordova",
+    "id": "cordova-plugin-ijkplayer",
     "platforms": [
       "android",
       "ios"
@@ -40,7 +40,7 @@
   "author": "Hao Lin",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/bilibili/ijkplayer/issues"
+    "url": "https://github.com/haolin/cordova-plugin-ijkplayer/issues"
   },
-  "homepage": "https://github.com/bilibili/ijkplayer#readme"
+  "homepage": "https://github.com/haolin/cordova-plugin-ijkplayer#readme"
 }
