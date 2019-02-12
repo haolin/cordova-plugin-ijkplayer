@@ -231,9 +231,9 @@
             <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="26" />
         </edit-config> -->
 
-        <config-file target="AndroidManifest.xml" parent="/manifest">
+        <!-- <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="26" />
-        </config-file>
+        </config-file> -->
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -247,8 +247,8 @@
         <resource-file src="src/android/layout/activity_home.xml" target="res/layout/activity_home.xml" />
         <resource-file src="src/android/layout/activity_main_view.xml" target="res/layout/activity_main_view.xml" />
         <resource-file src="src/android/layout/activity_player.xml" target="res/layout/activity_player.xml" />
-        <resource-file src="src/android/layout/strings_pref.xml" target="res/layout/strings_pref.xml" />
-        <resource-file src="src/android/layout/strings.xml" target="res/layout/strings.xml" />
+        <!-- <resource-file src="src/android/layout/strings_pref.xml" target="res/layout/strings_pref.xml" />
+        <resource-file src="src/android/layout/strings.xml" target="res/layout/strings.xml" /> -->
         <resource-file src="src/android/layout/table_media_info_row1.xml" target="res/layout/table_media_info_row1.xml" />
         <resource-file src="src/android/layout/table_media_info_row2.xml" target="res/layout/table_media_info_row2.xml" />
         <resource-file src="src/android/layout/table_media_info_section.xml" target="res/layout/table_media_info_section.xml" />
