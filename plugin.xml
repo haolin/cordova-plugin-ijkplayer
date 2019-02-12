@@ -227,6 +227,9 @@
             <string name="VideoView_player_IjkExoMediaPlayer">Player: IjkExoMediaPlayer</string>
         </config-file>
 -->
+        <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
+            <uses-sdk android:minSdkVersion="21" android:maxSdkVersion="26" />
+        </edit-config>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -237,15 +240,15 @@
         <resource-file src="src/android/values/ijkplayer_strings.xml" target="res/values" /> 
         <resource-file src="src/android/values/ijkplayer_strings_pref.xml" target="res/values" />
 
-        <resource-file src="src/android/layout/activity_home.xml" target="res/values" />
-        <resource-file src="src/android/layout/activity_main_view.xml" target="res/values" />
-        <resource-file src="src/android/layout/activity_player.xml" target="res/values" />
-        <resource-file src="src/android/layout/strings_pref.xml" target="res/values" />
-        <resource-file src="src/android/layout/strings.xml" target="res/values" />
-        <resource-file src="src/android/layout/table_media_info_row1.xml" target="res/values" />
-        <resource-file src="src/android/layout/table_media_info_row2.xml" target="res/values" />
-        <resource-file src="src/android/layout/table_media_info_section.xml" target="res/values" />
-        <resource-file src="src/android/layout/table_media_info.xml" target="res/values" />
+        <resource-file src="src/android/layout/activity_home.xml" target="res/layout" />
+        <resource-file src="src/android/layout/activity_main_view.xml" target="res/layout" />
+        <resource-file src="src/android/layout/activity_player.xml" target="res/layout" />
+        <resource-file src="src/android/layout/strings_pref.xml" target="res/layout" />
+        <resource-file src="src/android/layout/strings.xml" target="res/layout" />
+        <resource-file src="src/android/layout/table_media_info_row1.xml" target="res/layout" />
+        <resource-file src="src/android/layout/table_media_info_row2.xml" target="res/layout" />
+        <resource-file src="src/android/layout/table_media_info_section.xml" target="res/layout" />
+        <resource-file src="src/android/layout/table_media_info.xml" target="res/layout" />
 
         <resource-file src="src/android/libs/ijkplayer-exo-release.aar" target="libs" />
         <resource-file src="src/android/libs/ijkplayer-java-release.aar" target="libs" />
@@ -256,7 +259,7 @@
         <resource-file src="src/android/libs/armeabi/libijkffmpeg.so" target="libs/armeabi" />
         <resource-file src="src/android/libs/armeabi/libijkplayer.so" target="libs/armeabi" />
         <resource-file src="src/android/libs/armeabi/libijksdl.so" target="libs/armeabi" />
-        <lresource-file src="src/android/libs/armeabi-v7a/libijkffmpeg.so" target="libs/armeabi-v7a" />
+        <resource-file src="src/android/libs/armeabi-v7a/libijkffmpeg.so" target="libs/armeabi-v7a" />
         <resource-file src="src/android/libs/armeabi-v7a/libijkplayer.so" target="libs/armeabi-v7a" />
         <resource-file src="src/android/libs/armeabi-v7a/libijksdl.so" target="libs/armeabi-v7a" />
         <resource-file src="src/android/libs/x86/libijkffmpeg.so" target="libs/x86" />
