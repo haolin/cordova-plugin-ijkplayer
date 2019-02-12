@@ -96,7 +96,7 @@
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="IjkPlayer">
-                <param name="android-package" value="de.appplant.cordova.plugin.ijkplayer.IjkPlayer"/>
+                <param name="android-package" value="org.apache.cordova.ijkplayer.IjkPlayer"/>
             </feature>
         </config-file>
 
