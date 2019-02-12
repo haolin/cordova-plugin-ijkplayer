@@ -235,12 +235,16 @@
 
         <resource-file src="src/android/values/ijkplayer_strings.xml" target="res/values" /> 
         <resource-file src="src/android/values/ijkplayer_strings_pref.xml" target="res/values" />
-        <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <activity android:name="org.apache.cordova.ijkplayer" android:label="@string/app_name">
-                <intent-filter>
-                </intent-filter>
-            </activity>
-        </config-file>
+
+        <resource-file src="src/android/layout/activity_home.xml" target="res/layout" />
+        <resource-file src="src/android/layout/activity_main_view.xml" target="res/layout" />
+        <resource-file src="src/android/layout/activity_player.xml" target="res/layout" />
+        <resource-file src="src/android/layout/strings_pref.xml" target="res/layout" />
+        <resource-file src="src/android/layout/strings.xml" target="res/layout" />
+        <resource-file src="src/android/layout/table_media_info_row1.xml" target="res/layout" />
+        <resource-file src="src/android/layout/table_media_info_row2.xml" target="res/layout" />
+        <resource-file src="src/android/layout/table_media_info_section.xml" target="res/layout" />
+        <resource-file src="src/android/layout/table_media_info.xml" target="res/layout" />
 
         <lib-file src="src/android/libs/ijkplayer-exo-release.aar" arch="device" />
         <lib-file src="src/android/libs/ijkplayer-java-release.aar" arch="device" />
