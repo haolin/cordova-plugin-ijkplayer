@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import org.apache.cordova.ijkplayer.R;
+import com.galaxy.client.R;
 
 public class Settings {
     private Context mAppContext;

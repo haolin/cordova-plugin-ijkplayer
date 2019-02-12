@@ -22,7 +22,7 @@ import android.widget.MediaController;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import org.apache.cordova.ijkplayer.R;
+import com.galaxy.client.R;
 import org.apache.cordova.ijkplayer.application.Settings;
 import org.apache.cordova.ijkplayer.services.MediaPlayerService;
 
