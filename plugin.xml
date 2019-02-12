@@ -287,6 +287,14 @@
             src="src/android/ijkplayer/media/TextureRenderView.java"
             target-dir="src/org/apache/cordova/ijkplayer/media" />
 
+        <source-file
+            src="src/android/ijkplayer/application/Settings.java"
+            target-dir="src/org/apache/cordova/ijkplayer/application" />
+
+        <source-file
+            src="src/android/ijkplayer/services/MediaPlayerService.java"
+            target-dir="src/org/apache/cordova/ijkplayer/services" />
+
     </platform>
 
 </plugin>

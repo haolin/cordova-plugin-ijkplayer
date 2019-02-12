@@ -21,7 +21,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import com.galaxy.client.R;
+import org.apache.cordova.ijkplayer.R;
 
 import java.lang.ref.WeakReference;
 
