@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.galaxy.client.media;
+package org.apache.cordova.ijkplayer.media;
 
 import android.content.Context;
 import android.support.v7.app.AlertDialog;

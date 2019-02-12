@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.galaxy.client.media;
+package org.apache.cordova.ijkplayer.media;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;

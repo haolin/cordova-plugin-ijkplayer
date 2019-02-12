@@ -145,51 +145,51 @@
 
         <source-file
             src="src/android/ijkplayer/media/AndroidMediaController.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
         <source-file
             src="src/android/ijkplayer/media/FileMediaDataSource.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
         <source-file
             src="src/android/ijkplayer/media/IjkVideoView.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
         <source-file
             src="src/android/ijkplayer/media/IMediaController.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
         <source-file
             src="src/android/ijkplayer/media/InfoHudViewHolder.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
         <source-file
             src="src/android/ijkplayer/media/IRenderView.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
         <source-file
             src="src/android/ijkplayer/media/MeasureHelper.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
         <source-file
             src="src/android/ijkplayer/media/MediaPlayerCompat.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
         <source-file
             src="src/android/ijkplayer/media/PlayerManager.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
         <source-file
             src="src/android/ijkplayer/media/SurfaceRenderView.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
         <source-file
             src="src/android/ijkplayer/media/TableLayoutBinder.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
-            
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
+
         <source-file
             src="src/android/ijkplayer/media/TextureRenderView.java"
-            target-dir="src/de/appplant/cordova/plugin/ijkplayer/media" />
+            target-dir="src/org/apache/cordova/ijkplayer/media" />
 
     </platform>
 

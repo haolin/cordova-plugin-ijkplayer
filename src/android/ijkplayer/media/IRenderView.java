@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.galaxy.client.media;
+package org.apache.cordova.ijkplayer.media;
 
 import android.graphics.SurfaceTexture;
 import android.support.annotation.NonNull;

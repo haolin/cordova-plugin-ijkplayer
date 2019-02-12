@@ -1,4 +1,4 @@
-package com.galaxy.client.media;
+package org.apache.cordova.ijkplayer.media;
 
 import android.annotation.TargetApi;
 import android.content.Context;

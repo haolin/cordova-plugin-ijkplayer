@@ -1,4 +1,4 @@
-package com.galaxy.client.media;
+package org.apache.cordova.ijkplayer.media;
 
 import android.content.Context;
 import android.os.Handler;
