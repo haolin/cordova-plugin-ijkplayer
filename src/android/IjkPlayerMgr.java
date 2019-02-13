@@ -133,7 +133,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
     @Override
     public boolean execute (final String action, final JSONArray args,
                             final CallbackContext command) throws JSONException {
-        if ("deviceready".equals(action)) {
+        if ("playerVideo".equals(action)) {
             final String url = args.getString(0);
             cordova.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
