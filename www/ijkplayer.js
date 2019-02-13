@@ -55,6 +55,11 @@ exports.requestPermission = function (callback, scope) {
 };
 
 
+exports.test = function (callback, scope) {
+    this._exec('deviceready');
+};
+
+
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {
     this._exec('deviceready');

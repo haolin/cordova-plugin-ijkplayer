@@ -44,7 +44,7 @@
     </engines>
 
     <!-- dependencies -->
-    <dependency id="cordova-plugin-device" />
+    <!-- <dependency id="cordova-plugin-device" /> -->
 
     <!-- js -->
     <js-module src="www/ijkplayer.js" name="IjkPlayer">
@@ -227,9 +227,9 @@
             <string name="VideoView_player_IjkExoMediaPlayer">Player: IjkExoMediaPlayer</string>
         </config-file>
 -->
-        <!-- <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
+        <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
             <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="26" />
-        </edit-config> -->
+        </edit-config>
 
         <!-- <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="26" />
