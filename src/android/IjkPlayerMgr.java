@@ -48,6 +48,7 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.String;
 
 import org.apache.cordova.ijkplayer.media.IjkVideoView;
 import org.apache.cordova.ijkplayer.media.IRenderView;
@@ -133,10 +134,10 @@ public class IjkPlayerMgr extends CordovaPlugin {
     public boolean execute (final String action, final JSONArray args,
                             final CallbackContext command) throws JSONException {
         if ("deviceready".equals(action)) {
-            final long duration = args.getLong(0);
+            final String url = args.getString(0);
             cordova.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
-                    createVideoView();
+                    createVideoView(url);
                     command.success(); // Thread-safe.
                 }
             });
@@ -145,19 +146,26 @@ public class IjkPlayerMgr extends CordovaPlugin {
         return false;
     }
 
-    private void createVideoView() {
+    private void createVideoView(String url) {
         Activity activity = cordova.getActivity();
-
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         RelativeLayout rootView = new RelativeLayout(activity);
         View content = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
 
         FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
+
+        View oldView = activity.findViewById(R.id.drawer_layout);
+        if(oldView != null){
+            IjkVideoView videoView = (IjkVideoView) oldView.findViewById(R.id.video_view);
+            videoView.release(true);
+            framelayout.removeView(oldView);
+        }
+
         framelayout.addView(content, 0);
 
         mVideoView = (IjkVideoView) activity.findViewById(R.id.video_view);
         mVideoView.setAspectRatio(IRenderView.AR_MATCH_PARENT);
-        mVideoView.setVideoURI(Uri.parse(url5));
+        mVideoView.setVideoURI(Uri.parse(url));
         mVideoView.start();
     }
 
