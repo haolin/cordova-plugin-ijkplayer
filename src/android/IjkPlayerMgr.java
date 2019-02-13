@@ -29,10 +29,12 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.util.Pair;
 import android.view.View;
+import android.content.Intent;
 import android.widget.FrameLayout;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 import android.net.Uri;
+import com.galaxy.client.R;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -47,12 +49,17 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.cordova.ijkplayer.media.IjkVideoView;
+import org.apache.cordova.ijkplayer.media.IRenderView;
+
 public class IjkPlayerMgr extends CordovaPlugin {
 
     // Reference to the web view for static access
     private static WeakReference<CordovaWebView> webView = null;
 
     private String url5 = "rtmp://119.23.79.45:1935/live/B012";
+
+    private IjkVideoView mVideoView;
 
     /**
      * Called after plugin construction and fields have been initialized.
@@ -126,7 +133,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
     public boolean execute (final String action, final JSONArray args,
                             final CallbackContext command) throws JSONException {
         if (action.equals("deviceready")) {
-            deviceready();
+            createVideoView();
         } else
         if (action.equals("check")) {
            
@@ -145,10 +152,10 @@ public class IjkPlayerMgr extends CordovaPlugin {
         RelativeLayout rootView = new RelativeLayout(activity);
         View content = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
 
-        FrameLayout framelayout = (FrameLayout) findViewById(android.R.id.content);
+        FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
         framelayout.addView(content, 0);
 
-        mVideoView = (IjkVideoView) findViewById(R.id.video_view);
+        mVideoView = (IjkVideoView) activity.findViewById(R.id.video_view);
         mVideoView.setAspectRatio(IRenderView.AR_MATCH_PARENT);
         mVideoView.setVideoURI(Uri.parse(url5));
         mVideoView.start();

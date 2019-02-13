@@ -45,24 +45,14 @@ exports._exec = function (action, args, callback, scope) {
     exec(fn, null, 'IjkPlayerMgr', action, params);
 };
 
-
-exports.hasPermission = function (callback, scope) {
-    this._exec('check', null, callback, scope);
-};
-
-exports.requestPermission = function (callback, scope) {
-    this._exec('request', null, callback, scope);
-};
-
-
 exports.test = function (callback, scope) {
-    this._exec('deviceready');
+    exports._exec('deviceready');
 };
 
 
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {
-    this._exec('deviceready');
+    exports._exec('deviceready');
 });
 
 // Called before 'deviceready' event
