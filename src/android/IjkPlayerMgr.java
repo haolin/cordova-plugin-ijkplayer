@@ -21,7 +21,7 @@
 
 // codebeat:disable[TOO_MANY_FUNCTIONS]
 
-package de.appplant.cordova.plugin.localnotification;
+package org.apache.cordova.ijkplayer;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -29,6 +29,10 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.util.Pair;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.view.LayoutInflater;
+import android.widget.RelativeLayout;
+import android.net.Uri;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -43,35 +47,12 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.appplant.cordova.plugin.notification.Manager;
-import de.appplant.cordova.plugin.notification.Notification;
-import de.appplant.cordova.plugin.notification.Options;
-import de.appplant.cordova.plugin.notification.Request;
-import de.appplant.cordova.plugin.notification.action.ActionGroup;
-
-import static de.appplant.cordova.plugin.notification.Notification.Type.SCHEDULED;
-import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
-
-/**
- * This plugin utilizes the Android AlarmManager in combination with local
- * notifications. When a local notification is scheduled the alarm manager takes
- * care of firing the event. When the event is processed, a notification is put
- * in the Android notification center and status bar.
- */
-@SuppressWarnings({"Convert2Diamond", "Convert2Lambda"})
-public class LocalNotification extends CordovaPlugin {
+public class IjkPlayerMgr extends CordovaPlugin {
 
     // Reference to the web view for static access
     private static WeakReference<CordovaWebView> webView = null;
 
-    // Indicates if the device is ready (to receive events)
-    private static Boolean deviceready = false;
-
-    // Queues all events before deviceready
-    private static ArrayList<String> eventQueue = new ArrayList<String>();
-
-    // Launch details
-    private static Pair<Integer, String> launchDetails;
+    private String url5 = "rtmp://119.23.79.45:1935/live/B012";
 
     /**
      * Called after plugin construction and fields have been initialized.
@@ -80,7 +61,15 @@ public class LocalNotification extends CordovaPlugin {
      */
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
-        LocalNotification.webView = new WeakReference<CordovaWebView>(webView);
+        IjkPlayerMgr.webView = new WeakReference<CordovaWebView>(webView);
+    }
+
+    /**
+     * Called when the system is about to start resuming a previous activity.
+     *
+     * @param multitasking		Flag indicating if multitasking is turned on for app
+     */
+    public void onPause(boolean multitasking) {
     }
 
     /**
@@ -90,16 +79,30 @@ public class LocalNotification extends CordovaPlugin {
      */
     @Override
     public void onResume (boolean multitasking) {
-        super.onResume(multitasking);
-        deviceready();
+    }
+
+    /**
+     * Called when the activity is becoming visible to the user.
+     */
+    public void onStart() {
+    }
+
+    /**
+     * Called when the activity is no longer visible to the user.
+     */
+    public void onStop() {
+    }
+
+    /**
+     * Called when the activity receives a new intent.
+     */
+    public void onNewIntent(Intent intent) {
     }
 
     /**
      * The final call you receive before your activity is destroyed.
      */
-    @Override
     public void onDestroy() {
-        deviceready = false;
     }
 
     /**
@@ -122,517 +125,33 @@ public class LocalNotification extends CordovaPlugin {
     @Override
     public boolean execute (final String action, final JSONArray args,
                             final CallbackContext command) throws JSONException {
-
-        if (action.equals("launch")) {
-            launch(command);
-            return true;
+        if (action.equals("deviceready")) {
+            deviceready();
+        } else
+        if (action.equals("check")) {
+           
+        } else
+        if (action.equals("request")) {
+            
         }
-
-        cordova.getThreadPool().execute(new Runnable() {
-            public void run() {
-                if (action.equals("ready")) {
-                    deviceready();
-                } else
-                if (action.equals("check")) {
-                    check(command);
-                } else
-                if (action.equals("request")) {
-                    request(command);
-                } else
-                if (action.equals("actions")) {
-                    actions(args, command);
-                } else
-                if (action.equals("schedule")) {
-                    schedule(args, command);
-                } else
-                if (action.equals("update")) {
-                    update(args, command);
-                } else
-                if (action.equals("cancel")) {
-                    cancel(args, command);
-                } else
-                if (action.equals("cancelAll")) {
-                    cancelAll(command);
-                } else
-                if (action.equals("clear")) {
-                    clear(args, command);
-                } else
-                if (action.equals("clearAll")) {
-                    clearAll(command);
-                } else
-                if (action.equals("type")) {
-                    type(args, command);
-                } else
-                if (action.equals("ids")) {
-                    ids(args, command);
-                } else
-                if (action.equals("notification")) {
-                    notification(args, command);
-                } else
-                if (action.equals("notifications")) {
-                    notifications(args, command);
-                }
-            }
-        });
 
         return true;
     }
 
-    /**
-     * Set launchDetails object.
-     *
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    @SuppressLint("DefaultLocale")
-    private void launch(CallbackContext command) {
-        if (launchDetails == null)
-            return;
-
-        JSONObject details = new JSONObject();
-
-        try {
-            details.put("id", launchDetails.first);
-            details.put("action", launchDetails.second);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        command.success(details);
-
-        launchDetails = null;
-    }
-
-    /**
-     * Ask if user has enabled permission for local notifications.
-     *
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void check (CallbackContext command) {
-        boolean allowed = getNotMgr().hasPermission();
-        success(command, allowed);
-    }
-
-    /**
-     * Request permission for local notifications.
-     *
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void request (CallbackContext command) {
-        check(command);
-    }
-
-    /**
-     * Register action group.
-     *
-     * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void actions (JSONArray args, CallbackContext command) {
-        int task        = args.optInt(0);
-        String id       = args.optString(1);
-        JSONArray list  = args.optJSONArray(2);
-        Context context = cordova.getActivity();
-
-        switch (task) {
-            case 0:
-                ActionGroup group = ActionGroup.parse(context, id, list);
-                ActionGroup.register(group);
-                command.success();
-                break;
-            case 1:
-                ActionGroup.unregister(id);
-                command.success();
-                break;
-            case 2:
-                boolean found = ActionGroup.isRegistered(id);
-                success(command, found);
-                break;
-        }
-    }
-
-    /**
-     * Schedule multiple local notifications.
-     *
-     * @param toasts  The notifications to schedule.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void schedule (JSONArray toasts, CallbackContext command) {
-        Manager mgr = getNotMgr();
-
-        for (int i = 0; i < toasts.length(); i++) {
-            JSONObject dict    = toasts.optJSONObject(i);
-            Options options    = new Options(dict);
-            Request request    = new Request(options);
-            Notification toast = mgr.schedule(request, TriggerReceiver.class);
-
-            if (toast != null) {
-                fireEvent("add", toast);
-            }
-        }
-
-        check(command);
-    }
-
-    /**
-     * Update multiple local notifications.
-     *
-     * @param updates Notification properties including their IDs.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void update (JSONArray updates, CallbackContext command) {
-        Manager mgr = getNotMgr();
-
-        for (int i = 0; i < updates.length(); i++) {
-            JSONObject update  = updates.optJSONObject(i);
-            int id             = update.optInt("id", 0);
-            Notification toast = mgr.update(id, update, TriggerReceiver.class);
-
-            if (toast == null)
-                continue;
-
-            fireEvent("update", toast);
-        }
-
-        check(command);
-    }
-
-    /**
-     * Cancel multiple local notifications.
-     *
-     * @param ids     Set of local notification IDs.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void cancel (JSONArray ids, CallbackContext command) {
-        Manager mgr = getNotMgr();
-
-        for (int i = 0; i < ids.length(); i++) {
-            int id             = ids.optInt(i, 0);
-            Notification toast = mgr.cancel(id);
-
-            if (toast == null)
-                continue;
-
-            fireEvent("cancel", toast);
-        }
-
-        command.success();
-    }
-
-    /**
-     * Cancel all scheduled notifications.
-     *
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void cancelAll(CallbackContext command) {
-        getNotMgr().cancelAll();
-        fireEvent("cancelall");
-        command.success();
-    }
-
-    /**
-     * Clear multiple local notifications without canceling them.
-     *
-     * @param ids     Set of local notification IDs.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void clear(JSONArray ids, CallbackContext command) {
-        Manager mgr = getNotMgr();
-
-        for (int i = 0; i < ids.length(); i++) {
-            int id             = ids.optInt(i, 0);
-            Notification toast = mgr.clear(id);
-
-            if (toast == null)
-                continue;
-
-            fireEvent("clear", toast);
-        }
-
-        command.success();
-    }
-
-    /**
-     * Clear all triggered notifications without canceling them.
-     *
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void clearAll(CallbackContext command) {
-        getNotMgr().clearAll();
-        fireEvent("clearall");
-        command.success();
-    }
-
-    /**
-     * Get the type of the notification (unknown, scheduled, triggered).
-     *
-     * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void type (JSONArray args, CallbackContext command) {
-        int id             = args.optInt(0);
-        Notification toast = getNotMgr().get(id);
-
-        if (toast == null) {
-            command.success("unknown");
-            return;
-        }
-
-        switch (toast.getType()) {
-            case SCHEDULED:
-                command.success("scheduled");
-                break;
-            case TRIGGERED:
-                command.success("triggered");
-                break;
-            default:
-                command.success("unknown");
-                break;
-        }
-    }
-
-    /**
-     * Set of IDs from all existent notifications.
-     *
-     * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void ids (JSONArray args, CallbackContext command) {
-        int type    = args.optInt(0);
-        Manager mgr = getNotMgr();
-        List<Integer> ids;
-
-        switch (type) {
-            case 0:
-                ids = mgr.getIds();
-                break;
-            case 1:
-                ids = mgr.getIdsByType(SCHEDULED);
-                break;
-            case 2:
-                ids = mgr.getIdsByType(TRIGGERED);
-                break;
-            default:
-                ids = new ArrayList<Integer>(0);
-                break;
-        }
-
-        command.success(new JSONArray(ids));
-    }
-
-    /**
-     * Options from local notification.
-     *
-     * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void notification (JSONArray args, CallbackContext command) {
-        int id       = args.optInt(0);
-        Options opts = getNotMgr().getOptions(id);
-
-        if (opts != null) {
-            command.success(opts.getDict());
-        } else {
-            command.success();
-        }
-    }
-
-    /**
-     * Set of options from local notification.
-     *
-     * @param args    The exec() arguments in JSON form.
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     */
-    private void notifications (JSONArray args, CallbackContext command) {
-        int type      = args.optInt(0);
-        JSONArray ids = args.optJSONArray(1);
-        Manager mgr   = getNotMgr();
-        List<JSONObject> options;
-
-        switch (type) {
-            case 0:
-                options = mgr.getOptions();
-                break;
-            case 1:
-                options = mgr.getOptionsByType(SCHEDULED);
-                break;
-            case 2:
-                options = mgr.getOptionsByType(TRIGGERED);
-                break;
-            case 3:
-                options = mgr.getOptionsById(toList(ids));
-                break;
-            default:
-                options = new ArrayList<JSONObject>(0);
-                break;
-        }
-
-        command.success(new JSONArray(options));
-    }
-
-    /**
-     * Call all pending callbacks after the deviceready event has been fired.
-     */
-    private static synchronized void deviceready() {
-        deviceready = true;
-
-        for (String js : eventQueue) {
-            sendJavascript(js);
-        }
-
-        eventQueue.clear();
-    }
-
-    /**
-     * Invoke success callback with a single boolean argument.
-     *
-     * @param command The callback context used when calling back into
-     *                JavaScript.
-     * @param arg     The single argument to pass through.
-     */
-    private void success(CallbackContext command, boolean arg) {
-        PluginResult result = new PluginResult(PluginResult.Status.OK, arg);
-        command.sendPluginResult(result);
-    }
-
-    /**
-     * Fire given event on JS side. Does inform all event listeners.
-     *
-     * @param event The event name.
-     */
-    private void fireEvent (String event) {
-        fireEvent(event, null, new JSONObject());
-    }
-
-    /**
-     * Fire given event on JS side. Does inform all event listeners.
-     *
-     * @param event        The event name.
-     * @param notification Optional notification to pass with.
-     */
-    static void fireEvent (String event, Notification notification) {
-        fireEvent(event, notification, new JSONObject());
-    }
-
-    /**
-     * Fire given event on JS side. Does inform all event listeners.
-     *
-     * @param event The event name.
-     * @param toast Optional notification to pass with.
-     * @param data  Event object with additional data.
-     */
-    static void fireEvent (String event, Notification toast, JSONObject data) {
-        String params, js;
-
-        try {
-            data.put("event", event);
-            data.put("foreground", isInForeground());
-            data.put("queued", !deviceready);
-
-            if (toast != null) {
-                data.put("notification", toast.getId());
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if (toast != null) {
-            params = toast.toString() + "," + data.toString();
-        } else {
-            params = data.toString();
-        }
-
-        js = "cordova.plugins.notification.local.fireEvent(" +
-                "\"" + event + "\"," + params + ")";
-
-        if (launchDetails == null && !deviceready && toast != null) {
-            launchDetails = new Pair<Integer, String>(toast.getId(), event);
-        }
-
-        sendJavascript(js);
-    }
-
-    /**
-     * Use this instead of deprecated sendJavascript
-     *
-     * @param js JS code snippet as string.
-     */
-    private static synchronized void sendJavascript(final String js) {
-
-        if (!deviceready || webView == null) {
-            eventQueue.add(js);
-            return;
-        }
-
-        final CordovaWebView view = webView.get();
-
-        ((Activity)(view.getContext())).runOnUiThread(new Runnable() {
-            public void run() {
-                view.loadUrl("javascript:" + js);
-            }
-        });
-    }
-
-    /**
-     * If the app is running in foreground.
-     */
-    private static boolean isInForeground() {
-
-        if (!deviceready || webView == null)
-            return false;
-
-        CordovaWebView view = webView.get();
-
-        KeyguardManager km = (KeyguardManager) view.getContext()
-                .getSystemService(Context.KEYGUARD_SERVICE);
-
-        //noinspection SimplifiableIfStatement
-        if (km != null && km.isKeyguardLocked())
-            return false;
-
-        return view.getView().getWindowVisibility() == View.VISIBLE;
-    }
-
-    /**
-     * If the app is running.
-     */
-    static boolean isAppRunning() {
-        return webView != null;
-    }
-
-    /**
-     * Convert JSON array of integers to List.
-     *
-     * @param ary Array of integers.
-     */
-    private List<Integer> toList (JSONArray ary) {
-        List<Integer> list = new ArrayList<Integer>();
-
-        for (int i = 0; i < ary.length(); i++) {
-            list.add(ary.optInt(i));
-        }
-
-        return list;
-    }
-
-    /**
-     * Notification manager instance.
-     */
-    private Manager getNotMgr() {
-        return Manager.getInstance(cordova.getActivity());
+    private void createVideoView() {
+        Activity activity = cordova.getActivity();
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout rootView = new RelativeLayout(activity);
+        View content = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
+
+        FrameLayout framelayout = (FrameLayout) findViewById(android.R.id.content);
+        framelayout.addView(content, 0);
+
+        mVideoView = (IjkVideoView) findViewById(R.id.video_view);
+        mVideoView.setAspectRatio(IRenderView.AR_MATCH_PARENT);
+        mVideoView.setVideoURI(Uri.parse(url5));
+        mVideoView.start();
     }
 
 }

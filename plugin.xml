@@ -279,6 +279,10 @@
             target-dir="res/xml" />
 
         <source-file
+            src="src/android/IjkPlayerMgr.java"
+            target-dir="src/org/apache/cordova/ijkplayer" />
+
+        <source-file
             src="src/android/ijkplayer/media/AndroidMediaController.java"
             target-dir="src/org/apache/cordova/ijkplayer/media" />
 
