@@ -13,11 +13,11 @@
         android:layout_height="match_parent"
         android:background="#0099cc">
 
-        <com.galaxy.client.media.IjkVideoView
+        <org.apache.cordova.ijkplayer.media.IjkVideoView
             android:id="@+id/video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"></com.galaxy.client.media.IjkVideoView>
+            android:layout_gravity="center"></org.apache.cordova.ijkplayer.media.IjkVideoView>
 
     </FrameLayout>
 

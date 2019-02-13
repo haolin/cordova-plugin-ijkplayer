@@ -132,17 +132,17 @@ public class IjkPlayerMgr extends CordovaPlugin {
     @Override
     public boolean execute (final String action, final JSONArray args,
                             final CallbackContext command) throws JSONException {
-        if (action.equals("deviceready")) {
-            createVideoView();
-        } else
-        if (action.equals("check")) {
-           
-        } else
-        if (action.equals("request")) {
-            
+        if ("deviceready".equals(action)) {
+            final long duration = args.getLong(0);
+            cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    createVideoView();
+                    callbackContext.success(); // Thread-safe.
+                }
+            });
+            return true;
         }
-
-        return true;
+        return false;
     }
 
     private void createVideoView() {

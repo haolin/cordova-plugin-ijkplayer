@@ -52,7 +52,7 @@ exports.test = function (callback, scope) {
 
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {
-    exports._exec('deviceready');
+    //exports._exec('deviceready');
 });
 
 // Called before 'deviceready' event
