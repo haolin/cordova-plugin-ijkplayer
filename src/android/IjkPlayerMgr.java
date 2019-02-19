@@ -58,9 +58,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
     // Reference to the web view for static access
     private static WeakReference<CordovaWebView> webView = null;
 
-    private String url5 = "rtmp://119.23.79.45:1935/live/B012";
-
-    private IjkVideoView mVideoView;
+    private IjkVideoView mVideoView = null;
 
     /**
      * Called after plugin construction and fields have been initialized.
@@ -134,10 +132,27 @@ public class IjkPlayerMgr extends CordovaPlugin {
     public boolean execute (final String action, final JSONArray args,
                             final CallbackContext command) throws JSONException {
         if ("playerVideo".equals(action)) {
-            final String url = args.getString(0);
+            final String videoUrl = args.getString(0);
             cordova.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
-                    createVideoView(url);
+                    playerVideo(videoUrl);
+                    command.success(); // Thread-safe.
+                }
+            });
+            return true;
+        }else if ("removeVideo".equals(action)) {
+            cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    removeVideo();
+                    command.success(); // Thread-safe.
+                }
+            });
+            return true;
+        }
+        else if ("disconnectVideo".equals(action)) {
+            cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    disconnectVideo();
                     command.success(); // Thread-safe.
                 }
             });
@@ -146,29 +161,42 @@ public class IjkPlayerMgr extends CordovaPlugin {
         return false;
     }
 
-    private void createVideoView(String url) {
+    private void playerVideo(String videoUrl) {
         Activity activity = cordova.getActivity();
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        RelativeLayout rootView = new RelativeLayout(activity);
-        View content = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
+        if(mVideoView == null){
+            RelativeLayout rootView = new RelativeLayout(activity);
+            FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
+            View content = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
+            framelayout.addView(content, 0);
+        }
 
-        FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
 
+
+        mVideoView = (IjkVideoView) activity.findViewById(R.id.video_view);
+        mVideoView.setAspectRatio(IRenderView.AR_MATCH_PARENT);
+        mVideoView.setVideoPath(videoUrl);
+        mVideoView.start();
+    }
+
+    private void removeVideo() {
+        Activity activity = cordova.getActivity();
         View oldView = activity.findViewById(R.id.drawer_layout);
         if(oldView != null){
             IjkVideoView videoView = (IjkVideoView) oldView.findViewById(R.id.video_view);
             videoView.release(true);
+            mVideoView = null;
+
+            FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
             framelayout.removeView(oldView);
         }
-
-        framelayout.addView(content, 0);
-
-        mVideoView = (IjkVideoView) activity.findViewById(R.id.video_view);
-        mVideoView.setAspectRatio(IRenderView.AR_MATCH_PARENT);
-        mVideoView.setVideoURI(Uri.parse(url));
-        mVideoView.start();
     }
 
+    private void disconnectVideo() {
+        Activity activity = cordova.getActivity();
+        if(mVideoView != null){
+            mVideoView.stopPlayback();
+        }
+    }
 }
 
 // codebeat:enable[TOO_MANY_FUNCTIONS]

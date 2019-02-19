@@ -50,8 +50,16 @@ exports.test = function (callback, scope) {
     exports._exec('playerVideo', 'rtmp://119.23.79.45:1935/live/B012');
 };
 
-exports.playVideo = function (callback, scope) {
-    exports._exec('playerVideo', 'rtmp://119.23.79.45:1935/live/B012');
+exports.playVideo = function (videoUrl, callback) {
+    exports._exec('playerVideo', videoUrl);
+};
+
+exports.removeVideo = function () {
+    exports._exec('removeVideo');
+};
+
+exports.disconnectVideo = function () {
+    exports._exec('disconnectVideo');
 };
 
 
