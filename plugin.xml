@@ -227,9 +227,9 @@
             <string name="VideoView_player_IjkExoMediaPlayer">Player: IjkExoMediaPlayer</string>
         </config-file>
 -->
-        <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
+        <!-- <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
             <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="26" />
-        </edit-config>
+        </edit-config> -->
 
         <!-- <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="26" />
@@ -237,8 +237,6 @@
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-            <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-            <uses-permission android:name="android.permission.WAKE_LOCK" />
         </config-file>
 
 
