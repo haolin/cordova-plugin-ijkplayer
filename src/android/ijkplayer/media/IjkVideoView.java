@@ -209,7 +209,11 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             case RENDER_NONE:
                 setRenderView(null);
                 break;
-            case RENDER_SURFACE_VIEW:
+            case RENDER_SURFACE_VIEW: {
+                SurfaceRenderView renderView = new SurfaceRenderView(getContext());
+                setRenderView(renderView);
+                break;
+            }
             case RENDER_TEXTURE_VIEW: {
                 TextureRenderView renderView = new TextureRenderView(getContext());
                 if (mMediaPlayer != null) {

@@ -53,6 +53,8 @@ import java.lang.String;
 import org.apache.cordova.ijkplayer.media.IjkVideoView;
 import org.apache.cordova.ijkplayer.media.IRenderView;
 
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
+
 public class IjkPlayerMgr extends CordovaPlugin {
 
     // Reference to the web view for static access
@@ -132,6 +134,9 @@ public class IjkPlayerMgr extends CordovaPlugin {
     public boolean execute (final String action, final JSONArray args,
                             final CallbackContext command) throws JSONException {
         if ("playerVideo".equals(action)) {
+            if(args.length() == 0){
+                return false;
+            }
             final String videoUrl = args.getString(0);
             cordova.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
@@ -170,8 +175,8 @@ public class IjkPlayerMgr extends CordovaPlugin {
             framelayout.addView(content, 0);
         }
 
-
-
+        IjkMediaPlayer.loadLibrariesOnce(null);
+        IjkMediaPlayer.native_profileBegin("libijkplayer.so");
         mVideoView = (IjkVideoView) activity.findViewById(R.id.video_view);
         mVideoView.setAspectRatio(IRenderView.AR_MATCH_PARENT);
         mVideoView.setVideoPath(videoUrl);
@@ -180,14 +185,17 @@ public class IjkPlayerMgr extends CordovaPlugin {
 
     private void removeVideo() {
         Activity activity = cordova.getActivity();
-        View oldView = activity.findViewById(R.id.drawer_layout);
+        FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
+        View oldView = framelayout.findViewById(R.id.drawer_layout);
         if(oldView != null){
             IjkVideoView videoView = (IjkVideoView) oldView.findViewById(R.id.video_view);
+            videoView.stopPlayback();
             videoView.release(true);
-            mVideoView = null;
-
-            FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
+            videoView.stopBackgroundPlay();
+            //videoView.setRender(IjkVideoView.RENDER_NONE);
+            IjkMediaPlayer.native_profileEnd();
             framelayout.removeView(oldView);
+            mVideoView = null;
         }
     }
 
