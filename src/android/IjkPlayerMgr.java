@@ -201,8 +201,17 @@ public class IjkPlayerMgr extends CordovaPlugin {
 
     private void disconnectVideo() {
         Activity activity = cordova.getActivity();
-        if(mVideoView != null){
-            mVideoView.stopPlayback();
+        FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
+        View oldView = framelayout.findViewById(R.id.drawer_layout);
+        if(oldView != null){
+            IjkVideoView videoView = (IjkVideoView) oldView.findViewById(R.id.video_view);
+            videoView.stopPlayback();
+            videoView.release(true);
+            videoView.stopBackgroundPlay();
+            //videoView.setRender(IjkVideoView.RENDER_NONE);
+            IjkMediaPlayer.native_profileEnd();
+            framelayout.removeView(oldView);
+            mVideoView = null;
         }
     }
 }
