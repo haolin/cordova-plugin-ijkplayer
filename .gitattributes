@@ -1,0 +1,2 @@
+IJKMediaFramework filter=lfs diff=lfs merge=lfs -text
+src/ios/framework/IJKMediaFramework.framework/IJKMediaFramework filter=lfs diff=lfs merge=lfs -text
