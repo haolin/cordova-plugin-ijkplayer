@@ -51,7 +51,8 @@
         <clobbers target="cordova.plugins.ijkplayer" />
     </js-module>
 
-    <!-- ios --><framework src="social.framework" weak="true" />
+    <!-- ios -->
+    <!-- <framework src="social.framework" weak="true" /> -->
     <platform name="ios">
         <!-- <config-file target="config.xml" parent="/*">
             <feature name="LocalNotification">
