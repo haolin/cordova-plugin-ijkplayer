@@ -51,7 +51,7 @@ exports.test = function (callback, scope) {
 };
 
 exports.playVideo = function (videoUrl, callback) {
-    exports._exec('playerVideo', videoUrl);
+    exports._exec('playerVideo', videoUrl, callback);
 };
 
 exports.removeVideo = function () {
@@ -61,7 +61,6 @@ exports.removeVideo = function () {
 exports.disconnectVideo = function () {
     exports._exec('disconnectVideo');
 };
-
 
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {

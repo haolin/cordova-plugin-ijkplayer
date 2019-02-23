@@ -23,6 +23,8 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.galaxy.client.R;
+
+import org.apache.cordova.CallbackContext;
 import org.apache.cordova.ijkplayer.application.Settings;
 import org.apache.cordova.ijkplayer.services.MediaPlayerService;
 
@@ -111,6 +113,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     private TextView subtitleDisplay;
 
+    private CallbackContext callbackContext = null;
     public IjkVideoView(Context context) {
         super(context);
         initVideoView(context);
@@ -242,6 +245,15 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
      */
     public void setVideoPath(String path) {
         setVideoURI(Uri.parse(path));
+    }
+
+
+    public void setCallbackContext(final CallbackContext command){
+        this.callbackContext = command;
+    }
+
+    public void removeCallbackContext(){
+        this.callbackContext = null;
     }
 
     /**
@@ -480,6 +492,9 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                             break;
                         case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
                             Log.d(TAG, "MEDIA_INFO_VIDEO_RENDERING_START:");
+                            if(callbackContext != null){
+                                callbackContext.success();
+                            }
                             break;
                         case IMediaPlayer.MEDIA_INFO_BUFFERING_START:
                             Log.d(TAG, "MEDIA_INFO_BUFFERING_START:");

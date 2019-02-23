@@ -140,7 +140,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
             final String videoUrl = args.getString(0);
             cordova.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
-                    playerVideo(videoUrl);
+                    playerVideo(videoUrl, command);
                     command.success(); // Thread-safe.
                 }
             });
@@ -166,7 +166,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
         return false;
     }
 
-    private void playerVideo(String videoUrl) {
+    private void playerVideo(String videoUrl, final CallbackContext command) {
         Activity activity = cordova.getActivity();
         if(mVideoView == null){
             RelativeLayout rootView = new RelativeLayout(activity);
@@ -180,6 +180,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
         mVideoView = (IjkVideoView) activity.findViewById(R.id.video_view);
         mVideoView.setAspectRatio(IRenderView.AR_MATCH_PARENT);
         mVideoView.setVideoPath(videoUrl);
+        mVideoView.setCallbackContext(command);
         mVideoView.start();
     }
 
@@ -192,6 +193,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
             videoView.stopPlayback();
             videoView.release(true);
             videoView.stopBackgroundPlay();
+            videoView.removeCallbackContext();
             //videoView.setRender(IjkVideoView.RENDER_NONE);
             IjkMediaPlayer.native_profileEnd();
             framelayout.removeView(oldView);
@@ -208,6 +210,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
             videoView.stopPlayback();
             videoView.release(true);
             videoView.stopBackgroundPlay();
+            videoView.removeCallbackContext();
             //videoView.setRender(IjkVideoView.RENDER_NONE);
             IjkMediaPlayer.native_profileEnd();
             framelayout.removeView(oldView);
