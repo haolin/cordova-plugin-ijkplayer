@@ -141,7 +141,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
             cordova.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     playerVideo(videoUrl, command);
-                    command.success(); // Thread-safe.
+                    //command.success(); // Thread-safe.
                 }
             });
             return true;
