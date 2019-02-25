@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -212,22 +213,23 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             case RENDER_NONE:
                 setRenderView(null);
                 break;
+            case RENDER_TEXTURE_VIEW:
             case RENDER_SURFACE_VIEW: {
                 SurfaceRenderView renderView = new SurfaceRenderView(getContext());
                 setRenderView(renderView);
                 break;
             }
-            case RENDER_TEXTURE_VIEW: {
-                TextureRenderView renderView = new TextureRenderView(getContext());
-                if (mMediaPlayer != null) {
-                    renderView.getSurfaceHolder().bindToMediaPlayer(mMediaPlayer);
-                    renderView.setVideoSize(mMediaPlayer.getVideoWidth(), mMediaPlayer.getVideoHeight());
-                    renderView.setVideoSampleAspectRatio(mMediaPlayer.getVideoSarNum(), mMediaPlayer.getVideoSarDen());
-                    renderView.setAspectRatio(mCurrentAspectRatio);
-                }
-                setRenderView(renderView);
-                break;
-            }
+//             {
+//                TextureRenderView renderView = new TextureRenderView(getContext());
+//                if (mMediaPlayer != null) {
+//                    renderView.getSurfaceHolder().bindToMediaPlayer(mMediaPlayer);
+//                    renderView.setVideoSize(mMediaPlayer.getVideoWidth(), mMediaPlayer.getVideoHeight());
+//                    renderView.setVideoSampleAspectRatio(mMediaPlayer.getVideoSarNum(), mMediaPlayer.getVideoSarDen());
+//                    renderView.setAspectRatio(mCurrentAspectRatio);
+//                }
+//                setRenderView(renderView);
+//                break;
+//            }
             default:
                 Log.e(TAG, String.format(Locale.getDefault(), "invalid render %d\n", render));
                 break;
@@ -331,6 +333,13 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             mMediaPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);
             mMediaPlayer.setOnSeekCompleteListener(mSeekCompleteListener);
             mMediaPlayer.setOnTimedTextListener(mOnTimedTextListener);
+            ((IjkMediaPlayer)mMediaPlayer).setOnNativeInvokeListener(new IjkMediaPlayer.OnNativeInvokeListener() {
+                @Override
+                public boolean onNativeInvoke(int i, Bundle bundle) {
+                    return true;
+                }
+            });
+
             mCurrentBufferPercentage = 0;
             String scheme = mUri.getScheme();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
@@ -566,21 +575,21 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                             messageId = R.string.VideoView_error_text_unknown;
                         }
 
-                        new AlertDialog.Builder(getContext())
-                                .setMessage(messageId)
-                                .setPositiveButton(R.string.VideoView_error_button,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int whichButton) {
-                                            /* If we get here, there is no onError listener, so
-                                             * at least inform them that the video is over.
-                                             */
-                                                if (mOnCompletionListener != null) {
-                                                    mOnCompletionListener.onCompletion(mMediaPlayer);
-                                                }
-                                            }
-                                        })
-                                .setCancelable(false)
-                                .show();
+//                        new AlertDialog.Builder(getContext())
+//                                .setMessage(messageId)
+//                                .setPositiveButton(R.string.VideoView_error_button,
+//                                        new DialogInterface.OnClickListener() {
+//                                            public void onClick(DialogInterface dialog, int whichButton) {
+//                                            /* If we get here, there is no onError listener, so
+//                                             * at least inform them that the video is over.
+//                                             */
+//                                                if (mOnCompletionListener != null) {
+//                                                    mOnCompletionListener.onCompletion(mMediaPlayer);
+//                                                }
+//                                            }
+//                                        })
+//                                .setCancelable(false)
+//                                .show();
                     }
                     return true;
                 }
@@ -1086,11 +1095,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 8);
-                    ijkMediaPlayer.setOption(1, "analyzemaxduration", 100L);
-                    ijkMediaPlayer.setOption(1, "probesize", 10240L);
-                    ijkMediaPlayer.setOption(1, "flush_packets", 1L);
-                    ijkMediaPlayer.setOption(4, "packet-buffering", 0L);
-                    ijkMediaPlayer.setOption(4, "framedrop", 1L);
                 }
                 mediaPlayer = ijkMediaPlayer;
             }
