@@ -61,7 +61,7 @@
             </feature>
         </config-file> -->
 
-        <framework src="src/ios/framework/IJKMediaFramework.framework" custom="true" />
+        <!-- <framework src="src/ios/framework/IJKMediaFramework.framework" custom="true" />
         <framework src="AudioToolbox.framework" />
         <framework src="AVFoundation.framework" />
         <framework src="CoreGraphics.framework" />
@@ -74,7 +74,7 @@
         <framework src="OpenGLES.framework" />
         <framework src="QuartzCore.framework" />
         <framework src="UIKit.framework" />
-        <framework src="VideoToolbox.framework" />
+        <framework src="VideoToolbox.framework" /> -->
 
         <!-- <header-file src="src/ios/APPLocalNotification.h" />
         <source-file src="src/ios/APPLocalNotification.m" /> -->
