@@ -62,6 +62,8 @@ public class IjkPlayerMgr extends CordovaPlugin {
 
     private IjkVideoView mVideoView = null;
 
+    private View mVideoLayout = null;
+
     /**
      * Called after plugin construction and fields have been initialized.
      * Prefer to use pluginInitialize instead since there is no value in
@@ -168,11 +170,11 @@ public class IjkPlayerMgr extends CordovaPlugin {
 
     private void playerVideo(String videoUrl, final CallbackContext command) {
         Activity activity = cordova.getActivity();
-        if(mVideoView == null){
+        if(mVideoLayout == null){
             RelativeLayout rootView = new RelativeLayout(activity);
             FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
-            View content = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
-            framelayout.addView(content, 0);
+            mVideoLayout = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
+            framelayout.addView(mVideoLayout, 0);
         }
 
         IjkMediaPlayer.loadLibrariesOnce(null);
@@ -187,33 +189,34 @@ public class IjkPlayerMgr extends CordovaPlugin {
     private void removeVideo() {
         Activity activity = cordova.getActivity();
         FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
-        View oldView = framelayout.findViewById(R.id.drawer_layout);
-        if(oldView != null){
-            IjkVideoView videoView = (IjkVideoView) oldView.findViewById(R.id.video_view);
+        //View oldView = framelayout.findViewById(R.id.drawer_layout);
+        if(mVideoLayout != null){
+            IjkVideoView videoView = (IjkVideoView) mVideoLayout.findViewById(R.id.video_view);
             videoView.stopPlayback();
             videoView.release(true);
             videoView.stopBackgroundPlay();
             videoView.removeCallbackContext();
             //videoView.setRender(IjkVideoView.RENDER_NONE);
             IjkMediaPlayer.native_profileEnd();
-            framelayout.removeView(oldView);
+            framelayout.removeView(mVideoLayout);
             mVideoView = null;
+            mVideoLayout = null;
         }
     }
 
     private void disconnectVideo() {
         Activity activity = cordova.getActivity();
         FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
-        View oldView = framelayout.findViewById(R.id.drawer_layout);
-        if(oldView != null){
-            IjkVideoView videoView = (IjkVideoView) oldView.findViewById(R.id.video_view);
+        //View oldView = framelayout.findViewById(R.id.drawer_layout);
+        if(mVideoLayout != null){
+            IjkVideoView videoView = (IjkVideoView) mVideoLayout.findViewById(R.id.video_view);
             videoView.stopPlayback();
             videoView.release(true);
             videoView.stopBackgroundPlay();
             videoView.removeCallbackContext();
             //videoView.setRender(IjkVideoView.RENDER_NONE);
             IjkMediaPlayer.native_profileEnd();
-            framelayout.removeView(oldView);
+            framelayout.removeView(mVideoLayout);
             mVideoView = null;
         }
     }
