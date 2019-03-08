@@ -47,11 +47,11 @@ exports._exec = function (action, args, callback, scope) {
 
 exports.test = function (callback, scope) {
     //exports._exec('deviceready');
-    exports._exec('playerVideo', 'rtmp://119.23.79.45:1935/live/B012');
+    exports._exec('playVideo', 'rtmp://119.23.79.45:1935/live/B012');
 };
 
 exports.playVideo = function (videoUrl, callback) {
-    exports._exec('playerVideo', videoUrl, callback);
+    exports._exec('playVideo', videoUrl, callback);
 };
 
 exports.removeVideo = function () {

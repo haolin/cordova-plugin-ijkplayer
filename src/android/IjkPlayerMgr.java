@@ -135,14 +135,14 @@ public class IjkPlayerMgr extends CordovaPlugin {
     @Override
     public boolean execute (final String action, final JSONArray args,
                             final CallbackContext command) throws JSONException {
-        if ("playerVideo".equals(action)) {
+        if ("playVideo".equals(action)) {
             if(args.length() == 0){
                 return false;
             }
             final String videoUrl = args.getString(0);
             cordova.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
-                    playerVideo(videoUrl, command);
+                    playVideo(videoUrl, command);
                     //command.success(); // Thread-safe.
                 }
             });
@@ -168,7 +168,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
         return false;
     }
 
-    private void playerVideo(String videoUrl, final CallbackContext command) {
+    private void playVideo(String videoUrl, final CallbackContext command) {
         Activity activity = cordova.getActivity();
         if(mVideoLayout == null){
             RelativeLayout rootView = new RelativeLayout(activity);
