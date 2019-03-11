@@ -26,9 +26,9 @@
 
 @interface IjkPlayerMgr ()
 
-@property (readwrite, assign) BOOL deviceready;
-@property (readwrite, assign) BOOL isActive;
+@property (nonatomic, retain) UIView *playerRootView;
 @property (nonatomic, retain) IJKFFMoviePlayerController *ijkPlayer;
+@property (nonatomic, retain) CDVInvokedUrlCommand *cdvInvokedUrlCommand;
 
 - (IJKFFOptions *)optionsByDefault;
 
@@ -36,38 +36,62 @@
 
 @implementation IjkPlayerMgr
 
-@synthesize deviceready, ijkPlayer;
+@synthesize playerRootView, ijkPlayer, cdvInvokedUrlCommand;
 
 #pragma mark -
 #pragma mark Interface
 
 - (void) playVideo:(CDVInvokedUrlCommand*)command{
+    if(command.arguments == nil || command.arguments.count == 0){
+        return;
+    }
     NSString *videoUrl = command.arguments[0];
-
+    if(videoUrl == nil){
+        return;
+    }
     
+    if(self.ijkPlayer != nil){
+        [self.ijkPlayer stop];
+        self.ijkPlayer = nil;
+        [self.playerRootView removeFromSuperview];
+        self.playerRootView = nil;
+    }
+    self.cdvInvokedUrlCommand = command;
     UIWindow * window = [[UIApplication sharedApplication] keyWindow];
     UIView *rootView = [[window subviews] objectAtIndex:0];
-    
-    UIView *displayView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, rootView.bounds.size.width, rootView.bounds.size.height)];
-    displayView.backgroundColor = [UIColor blackColor];
+    self.playerRootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, rootView.bounds.size.width, rootView.bounds.size.height)];
+    self.playerRootView.backgroundColor = [UIColor blackColor];
     
     self.ijkPlayer = [[IJKFFMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString: videoUrl]
                                                                 withOptions:[self optionsByDefault]];
     [self.ijkPlayer setScalingMode:IJKMPMovieScalingModeAspectFill];
-    UIView *playerView = [self.ijkPlayer view];
-    playerView.frame = displayView.bounds;
-    playerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [displayView insertSubview:playerView atIndex:1];
-    [rootView insertSubview:displayView atIndex:2];
-    [self.ijkPlayer play];
+    UIView *ijkView = [self.ijkPlayer view];
+    ijkView.frame = self.playerRootView.bounds;
+    ijkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.playerRootView addSubview:ijkView];
+    [rootView insertSubview:self.playerRootView atIndex:1];
+    [self installMovieNotificationObservers];
+    [self.ijkPlayer prepareToPlay];
 }
 
 - (void) removeVideo:(CDVInvokedUrlCommand*)command{
-    
+    if(self.ijkPlayer != nil){
+        [self.ijkPlayer stop];
+        self.ijkPlayer = nil;
+        [self.playerRootView removeFromSuperview];
+        self.playerRootView = nil;
+        self.cdvInvokedUrlCommand = nil;
+    }
 }
 
 - (void) disconnectVideo:(CDVInvokedUrlCommand*)command{
-    
+    if(self.ijkPlayer != nil){
+        [self.ijkPlayer stop];
+        self.ijkPlayer = nil;
+        [self.playerRootView removeFromSuperview];
+        self.playerRootView = nil;
+        self.cdvInvokedUrlCommand = nil;
+    }
 }
 
 #pragma mark -
@@ -142,6 +166,13 @@
 
 #pragma Selector func
 
+- (void)startRender:(NSNotification*)notification {
+    NSLog(@"startRender\n");
+    if(self.cdvInvokedUrlCommand){
+        [self execCallback:self.cdvInvokedUrlCommand];
+    }
+}
+
 - (void)loadStateDidChange:(NSNotification*)notification {
     IJKMPMovieLoadState loadState = ijkPlayer.loadState;
     
@@ -213,6 +244,12 @@
 #pragma Install Notifiacation
 
 - (void)installMovieNotificationObservers {
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(startRender:)
+                                                 name:IJKMPMoviePlayerFirstVideoFrameRenderedNotification
+                                               object:ijkPlayer];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(loadStateDidChange:)
                                                  name:IJKMPMoviePlayerLoadStateDidChangeNotification
@@ -235,6 +272,9 @@
 }
 
 - (void)removeMovieNotificationObservers {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:IJKMPMoviePlayerFirstVideoFrameRenderedNotification
+                                                  object:ijkPlayer];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:IJKMPMoviePlayerLoadStateDidChangeNotification
                                                   object:ijkPlayer];
