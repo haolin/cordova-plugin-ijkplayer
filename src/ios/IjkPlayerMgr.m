@@ -64,14 +64,16 @@
     
     self.ijkPlayer = [[IJKFFMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString: videoUrl]
                                                                 withOptions:[self optionsByDefault]];
-    [self.ijkPlayer setScalingMode:IJKMPMovieScalingModeAspectFill];
-    UIView *ijkView = [self.ijkPlayer view];
-    ijkView.frame = self.playerRootView.bounds;
-    ijkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.playerRootView addSubview:ijkView];
-    [rootView insertSubview:self.playerRootView atIndex:1];
-    [self installMovieNotificationObservers];
-    [self.ijkPlayer prepareToPlay];
+    if(self.ijkPlayer != nil){
+        [self.ijkPlayer setScalingMode:IJKMPMovieScalingModeAspectFill];
+        UIView *ijkView = [self.ijkPlayer view];
+        ijkView.frame = self.playerRootView.bounds;
+        ijkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.playerRootView addSubview:ijkView];
+        [rootView insertSubview:self.playerRootView atIndex:1];
+        [self installMovieNotificationObservers];
+        [self.ijkPlayer prepareToPlay];
+    }
 }
 
 - (void) removeVideo:(CDVInvokedUrlCommand*)command{
