@@ -65,7 +65,7 @@
     self.ijkPlayer = [[IJKFFMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString: videoUrl]
                                                                 withOptions:[self optionsByDefault]];
     if(self.ijkPlayer != nil){
-        [self.ijkPlayer setScalingMode:IJKMPMovieScalingModeAspectFill];
+        [self.ijkPlayer setScalingMode:IJKMPMovieScalingModeFill];
         UIView *ijkView = [self.ijkPlayer view];
         ijkView.frame = self.playerRootView.bounds;
         ijkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
