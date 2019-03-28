@@ -51,7 +51,9 @@
     }
     
     if(self.ijkPlayer != nil){
-        [self.ijkPlayer stop];
+        [self.ijkPlayer shutdown];
+        UIView *ijkView = [self.ijkPlayer view];
+        [ijkView removeFromSuperview];
         self.ijkPlayer = nil;
         [self.playerRootView removeFromSuperview];
         self.playerRootView = nil;
@@ -78,7 +80,9 @@
 
 - (void) removeVideo:(CDVInvokedUrlCommand*)command{
     if(self.ijkPlayer != nil){
-        [self.ijkPlayer stop];
+        [self.ijkPlayer shutdown];
+        UIView *ijkView = [self.ijkPlayer view];
+        [ijkView removeFromSuperview];
         self.ijkPlayer = nil;
         [self.playerRootView removeFromSuperview];
         self.playerRootView = nil;
@@ -88,7 +92,9 @@
 
 - (void) disconnectVideo:(CDVInvokedUrlCommand*)command{
     if(self.ijkPlayer != nil){
-        [self.ijkPlayer stop];
+        [self.ijkPlayer shutdown];
+        UIView *ijkView = [self.ijkPlayer view];
+        [ijkView removeFromSuperview];
         self.ijkPlayer = nil;
         [self.playerRootView removeFromSuperview];
         self.playerRootView = nil;
