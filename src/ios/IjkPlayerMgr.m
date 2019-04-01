@@ -152,13 +152,14 @@
     IJKFFOptions *options = [[IJKFFOptions alloc] init];
     
     [options setPlayerOptionIntValue:30     forKey:@"max-fps"];
-    [options setPlayerOptionIntValue:1L      forKey:@"framedrop"];
+    [options setPlayerOptionIntValue:5      forKey:@"framedrop"];
     [options setPlayerOptionIntValue:3      forKey:@"video-pictq-size"];
     [options setPlayerOptionIntValue:0      forKey:@"videotoolbox"];
     [options setPlayerOptionIntValue:960    forKey:@"videotoolbox-max-frame-width"];
+    [options setPlayerOptionIntValue:1                  forKey:@"reconnect"];
     
     [options setFormatOptionIntValue:0                  forKey:@"auto_convert"];
-    [options setFormatOptionIntValue:1                  forKey:@"reconnect"];
+    
     [options setFormatOptionIntValue:30 * 1000 * 1000   forKey:@"timeout"];
     [options setFormatOptionValue:@"ijkplayer"          forKey:@"user-agent"];
     
@@ -166,6 +167,11 @@
     [options setFormatOptionIntValue:100L      forKey:@"analyzemaxduration"];
     [options setFormatOptionIntValue:10240L      forKey:@"probesize"];
     [options setFormatOptionIntValue:1L      forKey:@"flush_packets"];
+    
+    [options setPlayerOptionIntValue:0L        forKey:@"packet-buffering"];
+    [options setCodecOptionIntValue:0L   forKey:@"skip_loop_filter"];
+    [options setPlayerOptionIntValue:1    forKey:@"analyzeduration"];
+    [options setPlayerOptionIntValue:100    forKey:@"max-buffer-size"];
     
     options.showHudView   = NO;
     
