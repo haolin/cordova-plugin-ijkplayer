@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.galaxy.client.R;
 
+import org.apache.cordova.ijkplayer.IjkPlayerMgr;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.ijkplayer.application.Settings;
 import org.apache.cordova.ijkplayer.services.MediaPlayerService;
@@ -115,6 +116,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private TextView subtitleDisplay;
 
     private CallbackContext callbackContext = null;
+    private IjkPlayerMgr ijkPlayerMgr = null;
     public IjkVideoView(Context context) {
         super(context);
         initVideoView(context);
@@ -256,6 +258,14 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     public void removeCallbackContext(){
         this.callbackContext = null;
+    }
+
+    public void setIjkPlayerMgr(final IjkPlayerMgr mgr){
+        this.ijkPlayerMgr = mgr;
+    }
+
+    public void removeIjkPlayerMgr(){
+        this.ijkPlayerMgr = null;
     }
 
     /**
@@ -486,6 +496,8 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     if (mOnCompletionListener != null) {
                         mOnCompletionListener.onCompletion(mMediaPlayer);
                     }
+
+                    ijkPlayerMgr.reconnectVideoAfter(2000);
                 }
             };
 
@@ -501,6 +513,10 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                             break;
                         case IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
                             Log.d(TAG, "MEDIA_INFO_VIDEO_RENDERING_START:");
+
+                            if(ijkPlayerMgr != null){
+                                ijkPlayerMgr.startRender();
+                            }
                             if(callbackContext != null){
                                 callbackContext.success();
                             }
@@ -591,6 +607,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 //                                .setCancelable(false)
 //                                .show();
                     }
+                    ijkPlayerMgr.reconnectVideoAfter(2000);
                     return true;
                 }
             };
@@ -1084,6 +1101,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "analyzeduration", 1);
 
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "packet-buffering", 0L);
+                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "reconnect", 10000);
 
                     ijkMediaPlayer.setOption(1, "analyzemaxduration", 100L);
                     ijkMediaPlayer.setOption(1, "flush_packets", 1L);
@@ -1096,6 +1114,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "framedrop", 5);
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "max-buffer-size", 100);
+
                 }
                 mediaPlayer = ijkMediaPlayer;
             }

@@ -34,7 +34,7 @@ import android.widget.FrameLayout;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 import android.net.Uri;
-import com.galaxy.client.R;
+import com.galaxy.nnonline.R;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -55,14 +55,27 @@ import org.apache.cordova.ijkplayer.media.IRenderView;
 
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+
 public class IjkPlayerMgr extends CordovaPlugin {
 
     // Reference to the web view for static access
     private static WeakReference<CordovaWebView> webView = null;
 
     private IjkVideoView mVideoView = null;
-
     private View mVideoLayout = null;
+    private String currentVideoUrl = null;
+
+    private Boolean isReconnect = false;
+    private IjkVideoView mVideoViewReconnect = null;
+    private View mVideoLayoutReconnect = null;
+    private String reconnectVideoUrl = null;
+
+
+    private TimerTask reconnectTask = null;
+
 
     /**
      * Called after plugin construction and fields have been initialized.
@@ -170,6 +183,13 @@ public class IjkPlayerMgr extends CordovaPlugin {
 
     private void playVideo(String videoUrl, final CallbackContext command) {
         Activity activity = cordova.getActivity();
+        if(videoUrl == null){
+            return;
+        }
+
+        this.stopReconnect();
+
+
         if(mVideoLayout == null){
             RelativeLayout rootView = new RelativeLayout(activity);
             FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
@@ -180,10 +200,49 @@ public class IjkPlayerMgr extends CordovaPlugin {
         IjkMediaPlayer.loadLibrariesOnce(null);
         IjkMediaPlayer.native_profileBegin("libijkplayer.so");
         mVideoView = (IjkVideoView) activity.findViewById(R.id.video_view);
+        mVideoView.setIjkPlayerMgr(this);
         mVideoView.setAspectRatio(IRenderView.AR_MATCH_PARENT);
         mVideoView.setVideoPath(videoUrl);
         mVideoView.setCallbackContext(command);
         mVideoView.start();
+        currentVideoUrl = videoUrl;
+    }
+
+    private void playVideoReconnect(String videoUrl) {
+        Activity activity = cordova.getActivity();
+        if(videoUrl == null){
+            return;
+        }
+
+        RelativeLayout rootView = new RelativeLayout(activity);
+        FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
+
+
+        if(this.mVideoLayoutReconnect != null){
+            IjkVideoView videoView = (IjkVideoView) this.mVideoLayoutReconnect.findViewById(R.id.video_view);
+            videoView.stopPlayback();
+            videoView.release(true);
+            videoView.stopBackgroundPlay();
+            //videoView.setRender(IjkVideoView.RENDER_NONE);
+            IjkMediaPlayer.native_profileEnd();
+            framelayout.removeView(this.mVideoLayoutReconnect);
+            this.mVideoViewReconnect = null;
+            this.mVideoLayoutReconnect = null;
+        }
+
+
+        this.mVideoLayoutReconnect = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
+        this.mVideoViewReconnect = (IjkVideoView) this.mVideoLayoutReconnect.findViewById(R.id.video_view);
+        mVideoViewReconnect.setIjkPlayerMgr(this);
+        framelayout.addView(this.mVideoLayoutReconnect, 0);
+
+        IjkMediaPlayer.loadLibrariesOnce(null);
+        IjkMediaPlayer.native_profileBegin("libijkplayer.so");
+        this.mVideoViewReconnect = (IjkVideoView) activity.findViewById(R.id.video_view);
+        this.mVideoViewReconnect.setAspectRatio(IRenderView.AR_MATCH_PARENT);
+        this.mVideoViewReconnect.setVideoPath(videoUrl);
+        this.mVideoViewReconnect.start();
+        reconnectVideoUrl = videoUrl;
     }
 
     private void removeVideo() {
@@ -220,6 +279,94 @@ public class IjkPlayerMgr extends CordovaPlugin {
             mVideoView = null;
         }
     }
+
+    private void stopReconnect() {
+        Activity activity = cordova.getActivity();
+        if(isReconnect){
+            isReconnect = false;
+            reconnectVideoUrl = null;
+
+            FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
+            if(this.mVideoLayoutReconnect != null){
+                IjkVideoView videoView = (IjkVideoView) this.mVideoLayoutReconnect.findViewById(R.id.video_view);
+                videoView.stopPlayback();
+                videoView.release(true);
+                videoView.stopBackgroundPlay();
+                //videoView.setRender(IjkVideoView.RENDER_NONE);
+                IjkMediaPlayer.native_profileEnd();
+                framelayout.removeView(this.mVideoLayoutReconnect);
+                this.mVideoViewReconnect = null;
+                this.mVideoLayoutReconnect = null;
+            }
+        }
+    }
+
+    public TimerTask reconnectVideo = new TimerTask() {
+        @Override
+        public void run() {
+            if(currentVideoUrl != null &&
+                    mVideoView != null &&
+                    reconnectVideoUrl != null &&
+                    reconnectVideoUrl == currentVideoUrl){
+                isReconnect = true;
+                playVideoReconnect(reconnectVideoUrl);
+            }
+        }
+
+    };
+
+    public void reconnectVideoAfter(long millisecond){
+        reconnectVideoUrl = currentVideoUrl;
+        Timer timer = new Timer();
+        if(reconnectTask != null){
+            reconnectTask.cancel();
+        }
+
+        reconnectTask = new TimerTask() {
+            @Override
+            public void run() {
+                if(currentVideoUrl != null &&
+                        mVideoView != null &&
+                        reconnectVideoUrl != null &&
+                        reconnectVideoUrl == currentVideoUrl){
+                    isReconnect = true;
+                    playVideoReconnect(reconnectVideoUrl);
+                }
+            }
+
+        };
+
+        timer.schedule(reconnectTask, millisecond);
+    }
+
+    public void startRender(){
+        Activity activity = cordova.getActivity();
+        if(isReconnect){
+            if(mVideoView != null && reconnectVideoUrl == currentVideoUrl){
+                isReconnect = false;
+
+                mVideoView.stopPlayback();
+                mVideoView.release(true);
+                mVideoView.stopBackgroundPlay();
+
+                FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
+                framelayout.removeView(this.mVideoLayout);
+
+                mVideoView = mVideoViewReconnect;
+                mVideoLayout = mVideoLayoutReconnect;
+                currentVideoUrl = reconnectVideoUrl;
+
+                mVideoViewReconnect = null;
+                mVideoLayoutReconnect = null;
+                reconnectVideoUrl = null;
+            }else{
+                this.stopReconnect();
+            }
+        }
+    }
+
+
+
 }
 
 // codebeat:enable[TOO_MANY_FUNCTIONS]
