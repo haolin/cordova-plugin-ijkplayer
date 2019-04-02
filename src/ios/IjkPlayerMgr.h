@@ -20,11 +20,15 @@
  */
 
 #import <Cordova/CDVPlugin.h>
+#import <IJKMediaFramework/IJKMediaFramework.h>
 
-@interface IjkPlayerMgr : CDVPlugin
+@interface IjkPlayerMgr : CDVPlugin  <IJKMediaUrlOpenDelegate, IJKMediaNativeInvokeDelegate>
 
 - (void) playVideo:(CDVInvokedUrlCommand*)command;
 - (void) removeVideo:(CDVInvokedUrlCommand*)command;
 - (void) disconnectVideo:(CDVInvokedUrlCommand*)command;
+
+- (void)willOpenUrl:(IJKMediaUrlOpenData*) urlOpenData;
+- (int)invoke:(IJKMediaEvent)event attributes:(NSDictionary *)attributes;
 
 @end

@@ -22,21 +22,29 @@
 // codebeat:disable[TOO_MANY_FUNCTIONS]
 
 #import "IjkPlayerMgr.h"
-#import <IJKMediaFramework/IJKMediaFramework.h>
 
 @interface IjkPlayerMgr ()
 
+@property (nonatomic, retain) CDVInvokedUrlCommand *cdvInvokedUrlCommand;
+
 @property (nonatomic, retain) UIView *playerRootView;
 @property (nonatomic, retain) IJKFFMoviePlayerController *ijkPlayer;
-@property (nonatomic, retain) CDVInvokedUrlCommand *cdvInvokedUrlCommand;
+@property (nonatomic, retain) NSString *currentVideoUrl;
+
+@property (nonatomic, assign) BOOL isReconnect;
+@property (nonatomic, retain) UIView *playerRootViewReconnect;
+@property (nonatomic, retain) IJKFFMoviePlayerController *ijkPlayerReconnect;
+@property (nonatomic, retain) NSString *reconnectVideoUrl;
+
 
 - (IJKFFOptions *)optionsByDefault;
 
 @end
 
 @implementation IjkPlayerMgr
-
-@synthesize playerRootView, ijkPlayer, cdvInvokedUrlCommand;
+@synthesize cdvInvokedUrlCommand;
+@synthesize playerRootView, ijkPlayer, currentVideoUrl;
+@synthesize isReconnect, playerRootViewReconnect, ijkPlayerReconnect, reconnectVideoUrl;
 
 #pragma mark -
 #pragma mark Interface
@@ -50,7 +58,10 @@
         return;
     }
     
+    [self stopReconnect];
+    
     if(self.ijkPlayer != nil){
+        [self removeMovieNotificationObservers:self.ijkPlayer];
         [self.ijkPlayer shutdown];
         UIView *ijkView = [self.ijkPlayer view];
         [ijkView removeFromSuperview];
@@ -67,19 +78,70 @@
     self.ijkPlayer = [[IJKFFMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString: videoUrl]
                                                                 withOptions:[self optionsByDefault]];
     if(self.ijkPlayer != nil){
+        self.ijkPlayer.liveOpenDelegate = self;
+        self.ijkPlayer.tcpOpenDelegate = self;
+        self.ijkPlayer.segmentOpenDelegate = self;
+        self.ijkPlayer.nativeInvokeDelegate = self;
+        
         [self.ijkPlayer setScalingMode:IJKMPMovieScalingModeFill];
         UIView *ijkView = [self.ijkPlayer view];
         ijkView.frame = self.playerRootView.bounds;
         ijkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self.playerRootView addSubview:ijkView];
         [rootView insertSubview:self.playerRootView atIndex:1];
-        [self installMovieNotificationObservers];
+        [self installMovieNotificationObservers:self.ijkPlayer];
         [self.ijkPlayer prepareToPlay];
+        self.currentVideoUrl = videoUrl;
+    }
+}
+
+- (void) playVideoForReconnect:(NSString *)videoUrl{
+    if(videoUrl == nil){
+        self.isReconnect = false;
+        return;
+    }
+    
+    if(self.ijkPlayerReconnect != nil){
+        [self removeMovieNotificationObservers:self.ijkPlayerReconnect];
+        [self.ijkPlayerReconnect shutdown];
+        UIView *ijkView = [self.ijkPlayerReconnect view];
+        [ijkView removeFromSuperview];
+        self.ijkPlayerReconnect = nil;
+        [self.playerRootViewReconnect removeFromSuperview];
+        self.playerRootViewReconnect = nil;
+    }
+
+    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    UIView *rootView = [[window subviews] objectAtIndex:0];
+    self.playerRootViewReconnect = [[UIView alloc] initWithFrame:CGRectMake(0, 0, rootView.bounds.size.width, rootView.bounds.size.height)];
+    self.playerRootViewReconnect.backgroundColor = [UIColor blackColor];
+    
+    self.ijkPlayerReconnect = [[IJKFFMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString: videoUrl]
+                                                                withOptions:[self optionsByDefault]];
+    if(self.ijkPlayerReconnect != nil){
+        self.ijkPlayerReconnect.liveOpenDelegate = self;
+        self.ijkPlayerReconnect.tcpOpenDelegate = self;
+        self.ijkPlayerReconnect.segmentOpenDelegate = self;
+        self.ijkPlayerReconnect.nativeInvokeDelegate = self;
+
+        [self.ijkPlayerReconnect setScalingMode:IJKMPMovieScalingModeFill];
+        UIView *ijkView = [self.ijkPlayerReconnect view];
+        ijkView.frame = self.playerRootViewReconnect.bounds;
+        ijkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.playerRootViewReconnect addSubview:ijkView];
+        [rootView insertSubview:self.playerRootViewReconnect atIndex:0];
+        [self installMovieNotificationObservers:self.ijkPlayerReconnect];
+        [self.ijkPlayerReconnect prepareToPlay];
+        self.reconnectVideoUrl = videoUrl;
+    }else{
+        self.isReconnect = false;
     }
 }
 
 - (void) removeVideo:(CDVInvokedUrlCommand*)command{
+    [self stopReconnect];
     if(self.ijkPlayer != nil){
+        [self removeMovieNotificationObservers: self.ijkPlayer];
         [self.ijkPlayer shutdown];
         UIView *ijkView = [self.ijkPlayer view];
         [ijkView removeFromSuperview];
@@ -91,7 +153,9 @@
 }
 
 - (void) disconnectVideo:(CDVInvokedUrlCommand*)command{
+    [self stopReconnect];
     if(self.ijkPlayer != nil){
+        [self removeMovieNotificationObservers: self.ijkPlayer];
         [self.ijkPlayer shutdown];
         UIView *ijkView = [self.ijkPlayer view];
         [ijkView removeFromSuperview];
@@ -101,6 +165,33 @@
         self.cdvInvokedUrlCommand = nil;
     }
 }
+
+- (void)stopReconnect{
+    if(self.isReconnect){
+        self.isReconnect = false;
+        if(self.reconnectVideoUrl){
+            self.reconnectVideoUrl = nil;
+        }
+        if(self.ijkPlayerReconnect != nil){
+            [self removeMovieNotificationObservers: self.ijkPlayerReconnect];
+            [self.ijkPlayerReconnect shutdown];
+            self.ijkPlayerReconnect = nil;
+            [self.playerRootViewReconnect removeFromSuperview];
+            self.playerRootViewReconnect = nil;
+        }
+    }
+}
+
+- (void)reconnectVideo:(NSString *)reconnectUrl{
+    if(self.currentVideoUrl != nil &&
+       self.ijkPlayer != nil &&
+       reconnectUrl != nil &&
+       [self.currentVideoUrl isEqualToString:reconnectUrl]){
+        self.isReconnect = true;
+        [self playVideoForReconnect:reconnectUrl];
+    }
+}
+
 
 #pragma mark -
 #pragma mark Life Cycle
@@ -156,7 +247,7 @@
     [options setPlayerOptionIntValue:3      forKey:@"video-pictq-size"];
     [options setPlayerOptionIntValue:0      forKey:@"videotoolbox"];
     [options setPlayerOptionIntValue:960    forKey:@"videotoolbox-max-frame-width"];
-    [options setPlayerOptionIntValue:1                  forKey:@"reconnect"];
+    //[options setPlayerOptionIntValue:1                  forKey:@"reconnect"];
     
     [options setFormatOptionIntValue:0                  forKey:@"auto_convert"];
     
@@ -182,13 +273,40 @@
 
 - (void)startRender:(NSNotification*)notification {
     NSLog(@"startRender\n");
-    if(self.cdvInvokedUrlCommand){
-        [self execCallback:self.cdvInvokedUrlCommand];
+    if(self.isReconnect){
+        if(self.ijkPlayer != nil && self.reconnectVideoUrl == self.currentVideoUrl){
+            self.isReconnect = false;
+            UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+            UIView *rootView = [[window subviews] objectAtIndex:0];
+            [rootView exchangeSubviewAtIndex:0 withSubviewAtIndex:1];
+            
+            [self removeMovieNotificationObservers:self.ijkPlayer];
+            [self.ijkPlayer shutdown];
+            self.ijkPlayer = nil;
+            [self.playerRootView removeFromSuperview];
+            self.playerRootView = nil;
+            
+            self.playerRootView = self.playerRootViewReconnect;
+            self.ijkPlayer = self.ijkPlayerReconnect;
+            self.currentVideoUrl = self.reconnectVideoUrl;
+            
+            self.playerRootViewReconnect = nil;
+            self.ijkPlayerReconnect = nil;
+            self.reconnectVideoUrl = nil;
+        }else{
+            [self stopReconnect];
+        }
+        
+    }else{
+        if(self.cdvInvokedUrlCommand){
+            [self execCallback:self.cdvInvokedUrlCommand];
+        }
     }
 }
 
 - (void)loadStateDidChange:(NSNotification*)notification {
-    IJKMPMovieLoadState loadState = ijkPlayer.loadState;
+    IJKFFMoviePlayerController * player = notification.object;
+    IJKMPMovieLoadState loadState = player.loadState;
     
     if ((loadState & IJKMPMovieLoadStatePlaythroughOK) != 0) {
         NSLog(@"LoadStateDidChange: IJKMovieLoadStatePlayThroughOK: %d\n",(int)loadState);
@@ -204,6 +322,10 @@
     switch (reason) {
         case IJKMPMovieFinishReasonPlaybackEnded:
             NSLog(@"playbackStateDidChange: IJKMPMovieFinishReasonPlaybackEnded: %d\n", reason);
+            if(self.currentVideoUrl != nil && self.ijkPlayer != nil){
+                [self performSelector:@selector(reconnectVideo:) withObject:self.currentVideoUrl afterDelay:2];
+            }
+
             break;
             
         case IJKMPMovieFinishReasonUserExited:
@@ -212,6 +334,9 @@
             
         case IJKMPMovieFinishReasonPlaybackError:
             NSLog(@"playbackStateDidChange: IJKMPMovieFinishReasonPlaybackError: %d\n", reason);
+            if(self.currentVideoUrl != nil && self.ijkPlayer != nil){
+                [self performSelector:@selector(reconnectVideo:) withObject:self.currentVideoUrl afterDelay:2];
+            }
             break;
             
         default:
@@ -257,52 +382,64 @@
 
 #pragma Install Notifiacation
 
-- (void)installMovieNotificationObservers {
+- (void)installMovieNotificationObservers:(IJKFFMoviePlayerController *) object {
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(startRender:)
                                                  name:IJKMPMoviePlayerFirstVideoFrameRenderedNotification
-                                               object:ijkPlayer];
+                                               object:object];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(loadStateDidChange:)
                                                  name:IJKMPMoviePlayerLoadStateDidChangeNotification
-                                               object:ijkPlayer];
+                                               object:object];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(moviePlayBackFinish:)
                                                  name:IJKMPMoviePlayerPlaybackDidFinishNotification
-                                               object:ijkPlayer];
+                                               object:object];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(mediaIsPreparedToPlayDidChange:)
                                                  name:IJKMPMediaPlaybackIsPreparedToPlayDidChangeNotification
-                                               object:ijkPlayer];
+                                               object:object];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(moviePlayBackStateDidChange:)
                                                  name:IJKMPMoviePlayerPlaybackStateDidChangeNotification
-                                               object:ijkPlayer];
+                                               object:object];
     
 }
 
-- (void)removeMovieNotificationObservers {
+- (void)removeMovieNotificationObservers:(IJKFFMoviePlayerController *) object {
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:IJKMPMoviePlayerFirstVideoFrameRenderedNotification
-                                                  object:ijkPlayer];
+                                                  object:object];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:IJKMPMoviePlayerLoadStateDidChangeNotification
-                                                  object:ijkPlayer];
+                                                  object:object];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:IJKMPMoviePlayerPlaybackDidFinishNotification
-                                                  object:ijkPlayer];
+                                                  object:object];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:IJKMPMediaPlaybackIsPreparedToPlayDidChangeNotification
-                                                  object:ijkPlayer];
+                                                  object:object];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:IJKMPMoviePlayerPlaybackStateDidChangeNotification
-                                                  object:ijkPlayer];
+                                                  object:object];
     
 }
+
+#pragma Install delegate
+
+- (void)willOpenUrl:(IJKMediaUrlOpenData*) urlOpenData{
+    NSLog(@"willOpenUrl\n");
+}
+
+- (int)invoke:(IJKMediaEvent)event attributes:(NSDictionary *)attributes{
+    
+    return 1;
+}
+
 
 
 @end
