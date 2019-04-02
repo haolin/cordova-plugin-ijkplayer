@@ -34,7 +34,7 @@ import android.widget.FrameLayout;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 import android.net.Uri;
-import com.galaxy.nnonline.R;
+import com.galaxy.client.R;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -208,41 +208,48 @@ public class IjkPlayerMgr extends CordovaPlugin {
         currentVideoUrl = videoUrl;
     }
 
-    private void playVideoReconnect(String videoUrl) {
+    private void playVideoReconnect(final String videoUrl) {
         Activity activity = cordova.getActivity();
-        if(videoUrl == null){
-            return;
-        }
-
-        RelativeLayout rootView = new RelativeLayout(activity);
-        FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
-
-
-        if(this.mVideoLayoutReconnect != null){
-            IjkVideoView videoView = (IjkVideoView) this.mVideoLayoutReconnect.findViewById(R.id.video_view);
-            videoView.stopPlayback();
-            videoView.release(true);
-            videoView.stopBackgroundPlay();
-            //videoView.setRender(IjkVideoView.RENDER_NONE);
-            IjkMediaPlayer.native_profileEnd();
-            framelayout.removeView(this.mVideoLayoutReconnect);
-            this.mVideoViewReconnect = null;
-            this.mVideoLayoutReconnect = null;
-        }
+        final IjkPlayerMgr mgr = this;
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(videoUrl == null){
+                    return;
+                }
+                Activity activity = cordova.getActivity();
+                RelativeLayout rootView = new RelativeLayout(activity);
+                FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
 
 
-        this.mVideoLayoutReconnect = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
-        this.mVideoViewReconnect = (IjkVideoView) this.mVideoLayoutReconnect.findViewById(R.id.video_view);
-        mVideoViewReconnect.setIjkPlayerMgr(this);
-        framelayout.addView(this.mVideoLayoutReconnect, 0);
+                if(mVideoLayoutReconnect != null){
+                    IjkVideoView videoView = (IjkVideoView) mVideoLayoutReconnect.findViewById(R.id.video_view);
+                    videoView.stopPlayback();
+                    videoView.release(true);
+                    videoView.stopBackgroundPlay();
+                    //videoView.setRender(IjkVideoView.RENDER_NONE);
+                    IjkMediaPlayer.native_profileEnd();
+                    framelayout.removeView(mVideoLayoutReconnect);
+                    mVideoViewReconnect = null;
+                    mVideoLayoutReconnect = null;
+                }
 
-        IjkMediaPlayer.loadLibrariesOnce(null);
-        IjkMediaPlayer.native_profileBegin("libijkplayer.so");
-        this.mVideoViewReconnect = (IjkVideoView) activity.findViewById(R.id.video_view);
-        this.mVideoViewReconnect.setAspectRatio(IRenderView.AR_MATCH_PARENT);
-        this.mVideoViewReconnect.setVideoPath(videoUrl);
-        this.mVideoViewReconnect.start();
-        reconnectVideoUrl = videoUrl;
+
+                mVideoLayoutReconnect = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
+                mVideoViewReconnect = (IjkVideoView) mVideoLayoutReconnect.findViewById(R.id.video_view);
+                mVideoViewReconnect.setIjkPlayerMgr(mgr);
+                framelayout.addView(mVideoLayoutReconnect, 0);
+
+                IjkMediaPlayer.loadLibrariesOnce(null);
+                IjkMediaPlayer.native_profileBegin("libijkplayer.so");
+                mVideoViewReconnect = (IjkVideoView) activity.findViewById(R.id.video_view);
+                mVideoViewReconnect.setAspectRatio(IRenderView.AR_MATCH_PARENT);
+                mVideoViewReconnect.setVideoPath(videoUrl);
+                mVideoViewReconnect.start();
+                reconnectVideoUrl = videoUrl;
+            }
+        });
+
     }
 
     private void removeVideo() {
@@ -325,6 +332,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
         reconnectTask = new TimerTask() {
             @Override
             public void run() {
+                Activity activity = cordova.getActivity();
                 if(currentVideoUrl != null &&
                         mVideoView != null &&
                         reconnectVideoUrl != null &&
