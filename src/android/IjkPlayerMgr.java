@@ -84,7 +84,8 @@ public class IjkPlayerMgr extends CordovaPlugin {
      */
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
-        IjkPlayerMgr.webView = new WeakReference<CordovaWebView>(webView);
+        super.initialize(cordova, webView);
+        //IjkPlayerMgr.webView = new WeakReference<CordovaWebView>(webView);
     }
 
     /**
@@ -284,6 +285,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
             IjkMediaPlayer.native_profileEnd();
             framelayout.removeView(mVideoLayout);
             mVideoView = null;
+            mVideoLayout = null;
         }
     }
 
