@@ -28,6 +28,7 @@
 - (void) removeVideo:(CDVInvokedUrlCommand*)command;
 - (void) disconnectVideo:(CDVInvokedUrlCommand*)command;
 - (void) customizeVideoView:(CDVInvokedUrlCommand*)command;
+- (void) fullscreen:(CDVInvokedUrlCommand*)command;
 
 - (void)willOpenUrl:(IJKMediaUrlOpenData*) urlOpenData;
 - (int)invoke:(IJKMediaEvent)event attributes:(NSDictionary *)attributes;

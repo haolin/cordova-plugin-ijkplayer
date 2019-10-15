@@ -77,8 +77,10 @@ public class IjkPlayerMgr extends CordovaPlugin {
 
     private Double videoViewX = 0.0;
     private Double videoViewY = 0.0;
-    private Double videoViewWidth = 1.0;
-    private Double videoViewHeight = 1.0;
+    private Double videoViewWidth = 0.0;
+    private Double videoViewHeight = 0.0;
+
+    private Boolean isFullScreen = true;
 
 
     private TimerTask reconnectTask = null;
@@ -92,6 +94,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
         IjkPlayerMgr.webView = new WeakReference<CordovaWebView>(webView);
+        this.fullscreen();
     }
 
     /**
@@ -196,6 +199,15 @@ public class IjkPlayerMgr extends CordovaPlugin {
             cordova.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     customizeVideoView(x, y, width, height);
+                    command.success(); // Thread-safe.
+                }
+            });
+            return true;
+        }
+        else if ("fullscreen".equals(action)) {
+            cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    fullscreen();
                     command.success(); // Thread-safe.
                 }
             });
@@ -334,23 +346,27 @@ public class IjkPlayerMgr extends CordovaPlugin {
     }
 
     private void customizeVideoView(double x, double y, double width, double height) {
+        this.isFullScreen = false;
         this.videoViewX = x;
         this.videoViewY = y;
         this.videoViewWidth = width;
         this.videoViewHeight = height;
     }
 
+    private void fullscreen() {
+        this.isFullScreen = true;
+    }
+
     public void initVideoView(View videoView) {
-        Activity activity = cordova.getActivity();
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) videoView.getLayoutParams();
-        WindowManager wm = activity.getWindowManager();
-        int width = wm.getDefaultDisplay().getWidth();
-        int height = wm.getDefaultDisplay().getHeight();
-        params.width = (int)Math.round(width * this.videoViewWidth);
-        params.height = (int)Math.round(height * this.videoViewHeight);
-        params.leftMargin = (int)Math.round(width * this.videoViewX);
-        params.topMargin = (int)Math.round(height * this.videoViewY);
-        videoView.setLayoutParams(params);
+        if(this.isFullScreen == false){
+            Activity activity = cordova.getActivity();
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) videoView.getLayoutParams();
+            params.width = (int)Math.round(this.videoViewWidth);
+            params.height = (int)Math.round(this.videoViewHeight);
+            params.leftMargin = (int)Math.round(this.videoViewX);
+            params.topMargin = (int)Math.round(this.videoViewY);
+            videoView.setLayoutParams(params);
+        }
     }
 
     public TimerTask reconnectVideo = new TimerTask() {

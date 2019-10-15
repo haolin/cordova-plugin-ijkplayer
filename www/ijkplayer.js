@@ -67,6 +67,10 @@ exports.customizeVideoView = function (x, y, width, height) {
     exports._exec('customizeVideoView', args);
 };
 
+exports.fullscreen = function () {
+    exports._exec('fullscreen');
+};
+
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {
     //exports._exec('deviceready');

@@ -215,16 +215,15 @@
     self.videoViewHeight = height;
 }
 
+- (void)fullscreen:(CDVInvokedUrlCommand*)command{
+    self.videoViewX = 0.0;
+    self.videoViewY = 0.0;
+    self.videoViewWidth = [[UIScreen mainScreen] bounds].size.width;
+    self.videoViewHeight = [[UIScreen mainScreen] bounds].size.height;
+}
+
 - (UIView *) createVideoView{
-    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
-    UIView *rootView = [[window subviews] objectAtIndex:0];
-    NSUInteger winWidth = rootView.bounds.size.width;
-    NSUInteger winHeight = rootView.bounds.size.height;
-    CGFloat x = winWidth * self.videoViewX;
-    CGFloat y = winHeight * self.videoViewY;
-    CGFloat width = winWidth * self.videoViewWidth;
-    CGFloat height = winHeight * self.videoViewHeight;
-    UIView *videoView = [[UIView alloc] initWithFrame:CGRectMake(x, y, width, height)];
+    UIView *videoView = [[UIView alloc] initWithFrame:CGRectMake(self.videoViewX, self.videoViewY, self.videoViewWidth, self.videoViewHeight)];
     return videoView;
 }
 
@@ -238,10 +237,7 @@
 - (void) pluginInitialize
 {
     NSLog(@"pluginInitialize");
-    self.videoViewX = 0.0;
-    self.videoViewY = 0.0;
-    self.videoViewWidth = 1.0;
-    self.videoViewHeight = 1.0;
+    [self fullscreen:NULL];
 }
 
 #pragma mark -
