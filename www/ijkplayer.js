@@ -62,6 +62,11 @@ exports.disconnectVideo = function () {
     exports._exec('disconnectVideo');
 };
 
+exports.customizeVideoView = function (x, y, width, height) {
+    const args = [x, y, width, height];
+    exports._exec('customizeVideoView', args);
+};
+
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {
     //exports._exec('deviceready');

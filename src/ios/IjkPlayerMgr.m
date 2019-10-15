@@ -36,8 +36,14 @@
 @property (nonatomic, retain) IJKFFMoviePlayerController *ijkPlayerReconnect;
 @property (nonatomic, retain) NSString *reconnectVideoUrl;
 
+@property (nonatomic, assign) double videoViewX;
+@property (nonatomic, assign) double videoViewY;
+@property (nonatomic, assign) double videoViewWidth;
+@property (nonatomic, assign) double videoViewHeight;
+
 
 - (IJKFFOptions *)optionsByDefault;
+- (UIView *) createVideoView;
 
 @end
 
@@ -45,6 +51,7 @@
 @synthesize cdvInvokedUrlCommand;
 @synthesize playerRootView, ijkPlayer, currentVideoUrl;
 @synthesize isReconnect, playerRootViewReconnect, ijkPlayerReconnect, reconnectVideoUrl;
+@synthesize videoViewX, videoViewY, videoViewWidth, videoViewHeight;
 
 #pragma mark -
 #pragma mark Interface
@@ -70,9 +77,7 @@
         self.playerRootView = nil;
     }
     self.cdvInvokedUrlCommand = command;
-    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
-    UIView *rootView = [[window subviews] objectAtIndex:0];
-    self.playerRootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, rootView.bounds.size.width, rootView.bounds.size.height)];
+    self.playerRootView = [self createVideoView];
     self.playerRootView.backgroundColor = [UIColor blackColor];
     
     self.ijkPlayer = [[IJKFFMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString: videoUrl]
@@ -88,6 +93,9 @@
         ijkView.frame = self.playerRootView.bounds;
         ijkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self.playerRootView addSubview:ijkView];
+        
+        UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+        UIView *rootView = [[window subviews] objectAtIndex:0];
         [rootView insertSubview:self.playerRootView atIndex:1];
         [self installMovieNotificationObservers:self.ijkPlayer];
         [self.ijkPlayer prepareToPlay];
@@ -111,11 +119,8 @@
         self.playerRootViewReconnect = nil;
     }
 
-    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
-    UIView *rootView = [[window subviews] objectAtIndex:0];
-    self.playerRootViewReconnect = [[UIView alloc] initWithFrame:CGRectMake(0, 0, rootView.bounds.size.width, rootView.bounds.size.height)];
+    self.playerRootViewReconnect = [self createVideoView];
     self.playerRootViewReconnect.backgroundColor = [UIColor blackColor];
-    
     self.ijkPlayerReconnect = [[IJKFFMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString: videoUrl]
                                                                 withOptions:[self optionsByDefault]];
     if(self.ijkPlayerReconnect != nil){
@@ -129,6 +134,9 @@
         ijkView.frame = self.playerRootViewReconnect.bounds;
         ijkView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self.playerRootViewReconnect addSubview:ijkView];
+        
+        UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+        UIView *rootView = [[window subviews] objectAtIndex:0];
         [rootView insertSubview:self.playerRootViewReconnect atIndex:0];
         [self installMovieNotificationObservers:self.ijkPlayerReconnect];
         [self.ijkPlayerReconnect prepareToPlay];
@@ -192,6 +200,34 @@
     }
 }
 
+- (void)customizeVideoView:(CDVInvokedUrlCommand*)command{
+    if(command.arguments == nil || command.arguments.count < 4){
+        return;
+    }
+    double x = [command.arguments[0] doubleValue];
+    double y = [command.arguments[1] doubleValue];
+    double width = [command.arguments[2] doubleValue];
+    double height = [command.arguments[3] doubleValue];
+    
+    self.videoViewX = x;
+    self.videoViewY = y;
+    self.videoViewWidth = width;
+    self.videoViewHeight = height;
+}
+
+- (UIView *) createVideoView{
+    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    UIView *rootView = [[window subviews] objectAtIndex:0];
+    NSUInteger winWidth = rootView.bounds.size.width;
+    NSUInteger winHeight = rootView.bounds.size.height;
+    CGFloat x = winWidth * self.videoViewX;
+    CGFloat y = winHeight * self.videoViewY;
+    CGFloat width = winWidth * self.videoViewWidth;
+    CGFloat height = winHeight * self.videoViewHeight;
+    UIView *videoView = [[UIView alloc] initWithFrame:CGRectMake(x, y, width, height)];
+    return videoView;
+}
+
 
 #pragma mark -
 #pragma mark Life Cycle
@@ -202,6 +238,10 @@
 - (void) pluginInitialize
 {
     NSLog(@"pluginInitialize");
+    self.videoViewX = 0.0;
+    self.videoViewY = 0.0;
+    self.videoViewWidth = 1.0;
+    self.videoViewHeight = 1.0;
 }
 
 #pragma mark -

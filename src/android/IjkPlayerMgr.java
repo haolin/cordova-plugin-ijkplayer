@@ -30,8 +30,10 @@ import android.content.Context;
 import android.util.Pair;
 import android.view.View;
 import android.content.Intent;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.view.LayoutInflater;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.net.Uri;
 import com.galaxy.client.R;
@@ -73,6 +75,11 @@ public class IjkPlayerMgr extends CordovaPlugin {
     private View mVideoLayoutReconnect = null;
     private String reconnectVideoUrl = null;
 
+    private Double videoViewX = 0.0;
+    private Double videoViewY = 0.0;
+    private Double videoViewWidth = 1.0;
+    private Double videoViewHeight = 1.0;
+
 
     private TimerTask reconnectTask = null;
 
@@ -84,8 +91,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
      */
     @Override
     public void initialize (CordovaInterface cordova, CordovaWebView webView) {
-        super.initialize(cordova, webView);
-        //IjkPlayerMgr.webView = new WeakReference<CordovaWebView>(webView);
+        IjkPlayerMgr.webView = new WeakReference<CordovaWebView>(webView);
     }
 
     /**
@@ -179,6 +185,22 @@ public class IjkPlayerMgr extends CordovaPlugin {
             });
             return true;
         }
+        else if ("customizeVideoView".equals(action)) {
+            if(args.length() < 4){
+                return false;
+            }
+            final Double x = args.getDouble(0);
+            final Double y = args.getDouble(1);
+            final Double width = args.getDouble(2);
+            final Double height = args.getDouble(3);
+            cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    customizeVideoView(x, y, width, height);
+                    command.success(); // Thread-safe.
+                }
+            });
+            return true;
+        }
         return false;
     }
 
@@ -190,12 +212,12 @@ public class IjkPlayerMgr extends CordovaPlugin {
 
         this.stopReconnect();
 
-
         if(mVideoLayout == null){
             RelativeLayout rootView = new RelativeLayout(activity);
             FrameLayout framelayout = (FrameLayout) activity.findViewById(android.R.id.content);
             mVideoLayout = LayoutInflater.from(activity).inflate(R.layout.activity_player, rootView);
             framelayout.addView(mVideoLayout, 0);
+            initVideoView(mVideoLayout);
         }
 
         IjkMediaPlayer.loadLibrariesOnce(null);
@@ -240,6 +262,7 @@ public class IjkPlayerMgr extends CordovaPlugin {
                 mVideoViewReconnect = (IjkVideoView) mVideoLayoutReconnect.findViewById(R.id.video_view);
                 mVideoViewReconnect.setIjkPlayerMgr(mgr);
                 framelayout.addView(mVideoLayoutReconnect, 0);
+                initVideoView(mVideoLayoutReconnect);
 
                 IjkMediaPlayer.loadLibrariesOnce(null);
                 IjkMediaPlayer.native_profileBegin("libijkplayer.so");
@@ -308,6 +331,26 @@ public class IjkPlayerMgr extends CordovaPlugin {
                 this.mVideoLayoutReconnect = null;
             }
         }
+    }
+
+    private void customizeVideoView(double x, double y, double width, double height) {
+        this.videoViewX = x;
+        this.videoViewY = y;
+        this.videoViewWidth = width;
+        this.videoViewHeight = height;
+    }
+
+    public void initVideoView(View videoView) {
+        Activity activity = cordova.getActivity();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) videoView.getLayoutParams();
+        WindowManager wm = activity.getWindowManager();
+        int width = wm.getDefaultDisplay().getWidth();
+        int height = wm.getDefaultDisplay().getHeight();
+        params.width = (int)Math.round(width * this.videoViewWidth);
+        params.height = (int)Math.round(height * this.videoViewHeight);
+        params.leftMargin = (int)Math.round(width * this.videoViewX);
+        params.topMargin = (int)Math.round(height * this.videoViewY);
+        videoView.setLayoutParams(params);
     }
 
     public TimerTask reconnectVideo = new TimerTask() {
