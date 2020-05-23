@@ -218,12 +218,26 @@
 - (void)fullscreen:(CDVInvokedUrlCommand*)command{
     self.videoViewX = 0.0;
     self.videoViewY = 0.0;
-    self.videoViewWidth = [[UIScreen mainScreen] bounds].size.width;
-    self.videoViewHeight = [[UIScreen mainScreen] bounds].size.height;
+    // self.videoViewWidth = [[UIScreen mainScreen] bounds].size.width;
+    // self.videoViewHeight = [[UIScreen mainScreen] bounds].size.height;
+    self.videoViewWidth = 1.0;
+    self.videoViewHeight = 1.0;
 }
 
 - (UIView *) createVideoView{
+    /**设置x,y,width,height为绝对大小和位置
     UIView *videoView = [[UIView alloc] initWithFrame:CGRectMake(self.videoViewX, self.videoViewY, self.videoViewWidth, self.videoViewHeight)];
+    return videoView;
+    */
+
+    //设置的坐标和大小为屏幕长宽的百分比
+    NSUInteger winWidth = [[UIScreen mainScreen] bounds].size.width;
+    NSUInteger winHeight = [[UIScreen mainScreen] bounds].size.height;
+    CGFloat x = winWidth * self.videoViewX;
+    CGFloat y = winHeight * self.videoViewY;
+    CGFloat width = winWidth * self.videoViewWidth;
+    CGFloat height = winHeight * self.videoViewHeight;
+    UIView *videoView = [[UIView alloc] initWithFrame:CGRectMake(x, y, width, height)];
     return videoView;
 }
 

@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.GestureDetector;
+import android.view.GestureDetector; 
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.Surface;

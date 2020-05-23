@@ -359,12 +359,26 @@ public class IjkPlayerMgr extends CordovaPlugin {
 
     public void initVideoView(View videoView) {
         if(this.isFullScreen == false){
+            /**设置x,y,width,height为绝对大小和位置
             Activity activity = cordova.getActivity();
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) videoView.getLayoutParams();
             params.width = (int)Math.round(this.videoViewWidth);
             params.height = (int)Math.round(this.videoViewHeight);
             params.leftMargin = (int)Math.round(this.videoViewX);
             params.topMargin = (int)Math.round(this.videoViewY);
+            videoView.setLayoutParams(params);
+            */
+
+            //设置的坐标和大小为屏幕长宽的百分比
+            Activity activity = cordova.getActivity();
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) videoView.getLayoutParams();
+            WindowManager wm = activity.getWindowManager();
+            int width = wm.getDefaultDisplay().getWidth();
+            int height = wm.getDefaultDisplay().getHeight();
+            params.width = (int)Math.round(width * this.videoViewWidth);
+            params.height = (int)Math.round(height * this.videoViewHeight);
+            params.leftMargin = (int)Math.round(width * this.videoViewX);
+            params.topMargin = (int)Math.round(height * this.videoViewY);
             videoView.setLayoutParams(params);
         }
     }
