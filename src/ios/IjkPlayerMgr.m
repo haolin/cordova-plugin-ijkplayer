@@ -44,6 +44,7 @@
 
 - (IJKFFOptions *)optionsByDefault;
 - (UIView *) createVideoView;
+- (void) adjustVideoView:(UIView *)view;
 
 @end
 
@@ -213,6 +214,10 @@
     self.videoViewY = y;
     self.videoViewWidth = width;
     self.videoViewHeight = height;
+    
+    if(self.playerRootView != nil){
+        [self adjustVideoView:self.playerRootView];
+    }
 }
 
 - (void)fullscreen:(CDVInvokedUrlCommand*)command{
@@ -222,6 +227,10 @@
     // self.videoViewHeight = [[UIScreen mainScreen] bounds].size.height;
     self.videoViewWidth = 1.0;
     self.videoViewHeight = 1.0;
+    
+    if(self.playerRootView != nil){
+        [self adjustVideoView:self.playerRootView];
+    }
 }
 
 - (UIView *) createVideoView{
@@ -239,6 +248,17 @@
     CGFloat height = winHeight * self.videoViewHeight;
     UIView *videoView = [[UIView alloc] initWithFrame:CGRectMake(x, y, width, height)];
     return videoView;
+}
+
+- (void) adjustVideoView:(UIView *)view{
+    NSUInteger winWidth = [[UIScreen mainScreen] bounds].size.width;
+    NSUInteger winHeight = [[UIScreen mainScreen] bounds].size.height;
+    CGFloat x = winWidth * self.videoViewX;
+    CGFloat y = winHeight * self.videoViewY;
+    CGFloat width = winWidth * self.videoViewWidth;
+    CGFloat height = winHeight * self.videoViewHeight;
+    
+    view.frame = CGRectMake(x, y, width, height);
 }
 
 

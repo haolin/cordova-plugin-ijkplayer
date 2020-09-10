@@ -351,13 +351,27 @@ public class IjkPlayerMgr extends CordovaPlugin {
         this.videoViewY = y;
         this.videoViewWidth = width;
         this.videoViewHeight = height;
+
+        if(mVideoLayout != null){
+            initVideoView(mVideoLayout);
+        }
     }
 
     private void fullscreen() {
         this.isFullScreen = true;
+        
+        if(mVideoLayout != null){
+            initVideoView(mVideoLayout);
+        }
     }
 
     public void initVideoView(View videoView) {
+        Activity activity = cordova.getActivity();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) videoView.getLayoutParams();
+        WindowManager wm = activity.getWindowManager();
+        int width = wm.getDefaultDisplay().getWidth();
+        int height = wm.getDefaultDisplay().getHeight();
+
         if(this.isFullScreen == false){
             /**设置x,y,width,height为绝对大小和位置
             Activity activity = cordova.getActivity();
@@ -370,17 +384,18 @@ public class IjkPlayerMgr extends CordovaPlugin {
             */
 
             //设置的坐标和大小为屏幕长宽的百分比
-            Activity activity = cordova.getActivity();
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) videoView.getLayoutParams();
-            WindowManager wm = activity.getWindowManager();
-            int width = wm.getDefaultDisplay().getWidth();
-            int height = wm.getDefaultDisplay().getHeight();
             params.width = (int)Math.round(width * this.videoViewWidth);
             params.height = (int)Math.round(height * this.videoViewHeight);
             params.leftMargin = (int)Math.round(width * this.videoViewX);
             params.topMargin = (int)Math.round(height * this.videoViewY);
-            videoView.setLayoutParams(params);
+        }else{
+            params.width = width;
+            params.height = height;
+            params.leftMargin = 0;
+            params.topMargin = 0;
         }
+
+        videoView.setLayoutParams(params);
     }
 
     public TimerTask reconnectVideo = new TimerTask() {
